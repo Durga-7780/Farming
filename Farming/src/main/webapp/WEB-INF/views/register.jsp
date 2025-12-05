@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<link rel="stylesheet" href="css/stylesignup.css">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<title> Registeration </title>
+</head>
+
+<body>
+ <div class="demo form-bg">
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col-lg-12">
+                    <h1 class="heading-title blinking-text">Register Here... </h1>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6">
+                    <form autocomplete=off>
+                        <h1 class="heading">sign up</h1>
+                        <div class="form-group">
+                            <label class="control-label">Full Name</label>
+                            <input type="text" class="form-control" id="employee_name"  placeholder="Pragada"/>
+
+                            <label class="control-label">User Name</label>
+                            <input type="text" class="form-control" id="username" placeholder="Create Your User Name"/>
+
+                            <label class="control-label">Mobile Number</label>
+                            <input type="text" class="form-control" id="mobile" placeholder="10 digit mobile Number"/>
+                            
+                            <label class=" control-label">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="8+ Character Password"/>
+							
+							<label class="control-label">Gender</label>
+							  <div class="form-check">
+							    <input type="radio" class="form-check-input" id="male" name="gender" value="male">
+							    <label class="form-check-label" for="male">Male</label>
+							    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							    <input type="radio" class="form-check-input" id="female" name="gender" value="female">
+							    <label class="form-check-label" for="female">Female</label>
+							  </div>
+							
+							<span class="errorMessage1"></span>
+        					<span class="errorMessage2"></span>
+        
+                            <button type="submit" class="btn btn-default" id="btn">create your account <i class="fa fa-arrow-circle-right fa-2x"></i></button>
+                        </div>
+                        <span class="form-footer" style="font-size:20px">already have an account? <a href="login" style="font-size:20px">log in</a></span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+	<script>
+        var err=document.getElementsByClassName('errorMessage1')[0];
+        var err2=document.getElementsByClassName('errorMessage2')[0];
+        
+    	$('#btn').click(()=>{
+    		var empname=document.getElementById('employee_name');
+    		var mobile=document.getElementById('mobile');
+    		var user=document.getElementById('username');
+    		var pass=document.getElementById('password');
+    		var gender = $('input[name="gender"]:checked').val();
+    		
+    		if((empname.value).trim()!=''&&(mobile.value).trim()!=''&&(user.value).trim()!=''&&(pass.value).trim()!=''&&err.style.display=='none'&&err2.style.display=='none')
+    		{
+	    		var jsondata={
+	    				'empname':empname.value,
+	    				'mobile':mobile.value,
+	    				'user':user.value,
+	    				'pass':pass.value,
+	    				'gender':gender
+	    		}
+	    		$.ajax({
+	    			url:'saveregdata',
+	    			data:JSON.stringify(jsondata),
+	    			contentType: 'application/json',
+	    			datatype:'json',
+	    			type:'POST',
+	    			success:(res,statuscode)=>{
+	    			if(res.messg=="login")
+	    				window.location.replace('login');
+	    			else window.location.replace('register');
+	    			},
+	    			error:(obj,err,messge)=>{
+	    				console.log(messge);
+	    			}
+	    		})
+    		}
+    		else alert("All fields must be filled ");
+    		})
+    		
+    		var btn=document.getElementsByClassName('btn')[0];
+    		// mobile number validation
+    		$('#mobile').keyup(()=>{
+    			var val=$('#mobile').val().trim();
+    			if(val.match("^[6789][0-9]{9}$")){
+    				err.style.display='none';
+    			}
+    			else{
+    				err.style.display='block';
+    				err.textContent='Invalid Mobile number';
+    			}    			   			
+    		})
+    		
+    		// checking username already exists
+    		
+    		$('#username').keyup(()=>{
+    			var val=$('#username').val().trim();
+    			
+    			$.ajax({
+    				url:'checkusername',
+    				dataType:'json',
+    				type:'POST',
+    				contentType:'application/json',
+    				data:JSON.stringify({'id':val}),
+    				success:(res)=>{
+    					if(res){
+    						err2.style.display='block';
+    						err2.textContent='Username already exists';
+    					}
+    					else{
+    						err2.style.display='none';    						
+    					}
+    				}
+    				
+    			})
+    		})
+    		
+    		
+    </script>
+</body>
+</html>

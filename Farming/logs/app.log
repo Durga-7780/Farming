@@ -1,0 +1,12 @@
+2025-12-06T00:04:02.096+05:30  INFO 85480 --- [Farming] [main] spring.FarmingApplicationTests           : Starting FarmingApplicationTests using Java 17.0.12 with PID 85480 (started by durga in E:\eclipse-workspace\Farming)
+2025-12-06T00:04:02.118+05:30  INFO 85480 --- [Farming] [main] spring.FarmingApplicationTests           : No active profile set, falling back to 1 default profile: "default"
+2025-12-06T00:04:05.488+05:30  INFO 85480 --- [Farming] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-06T00:04:05.854+05:30  INFO 85480 --- [Farming] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-12-06T00:04:06.032+05:30  INFO 85480 --- [Farming] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-06T00:04:08.156+05:30  INFO 85480 --- [Farming] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-06T00:04:09.426+05:30  INFO 85480 --- [Farming] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@356341c9
+2025-12-06T00:04:09.432+05:30  INFO 85480 --- [Farming] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-06T00:04:12.037+05:30  INFO 85480 --- [Farming] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-06T00:04:15.180+05:30  INFO 85480 --- [Farming] [main] spring.FarmingApplicationTests           : Started FarmingApplicationTests in 13.688 seconds (process running for 15.592)
+2025-12-06T00:04:16.080+05:30  INFO 85480 --- [Farming] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-06T00:04:16.109+05:30  INFO 85480 --- [Farming] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Dashboard</title>
+    <script src="js/Chart.js"></script>
+    <script src="js/plugins/jquery.min.js"></script>
+   <!--  --> <link rel="stylesheet" href="css/all.min.css">
+    <link href='css/boxicons.min.css' rel='stylesheet'>
+    <script src="js/xlsx.full.min.js"></script>
+    <script src="js/jspdf.umd.min.js"></script>
+    <script async defer src="js/api.js"></script> 
+    <script src="js/api.js"></script>
+    <!-- Bootstrap CSS 
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
+	 <link rel="stylesheet" href="css/dashboard.css" > 
+	<!--  <link rel="stylesheet" href="css/bootstrap.min.css" > -->
+	<link rel="stylesheet" href="css/plugins/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/bootstrap-icons.css">
+	<link rel="stylesheet" href="css/bootstrap-icons.woff2" >
+	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+	
+</head>
+<body>
+<div class="content">
+    <div class="dashboard">
+        <!-- Top Section with Process and Time -->
+        <div class="header">
+            <h2 class="fs-5">Dashboard</h2>
+            <div class="loadingstoday">
+            <h3 id="todayLoad" class="fs-5" data-toggle="modal" data-target="#todayLoadingsModal">Today Loadings</h3>
+            </div>
+
+        <!-- New Sections: Download Mill Data, Farmer Bill, Mill Bill -->
+        <div class="mill-data-section">
+            <h3 id="downloadMillData" class="fs-5" data-toggle="modal" data-target="#downloadmilldataModal">Download Mill Data</h3>
+        </div>
+        <div class="farmer-bill-section">
+            <h3 id="farmerBill" class="fs-5" data-toggle="modal" data-target="#FarmerbillModal">Farmer Bill</h3>
+        </div>
+        <div class="mill-bill-section">
+            <h3 id="millBill" class="fs-5" data-toggle="modal" data-target="#MillBillScrollable">Mill Bill</h3>
+        </div>
+        <div class="mill-bill-section">
+        	<h3 id="comission" class="fs-5" data-toggle="modal" data-target="#CommissionModalToggle">Commission</h3>
+        </div>
+            <div class="time-section">
+                <span class="todaytext fs-5"> Date : </span>
+                <span id="dateTime"></span>
+            </div>
+            <div class="profile-section">
+	            <img src="images/manasvi.jpg" alt="Profile Image" class="profile-image" onclick="toggleProfileDetails()">
+	
+	            <div class="profile-info" id="profile-info">
+	            <table>
+	            	<tr>
+	            		<td>
+		                	<p class="name">Name </p>
+		                </td>
+		                <td class="name" style="font-weight:bold;text-transform:capitalize"><p id="user_Name"></p></td>
+	                </tr>
+	                <tr>
+		                <td>
+		                   <p class="username">Username </p>
+		                </td>
+		                <td class="username" style="font-weight:bold;text-transform:capitalize"><p id="user_username"></p></td>
+	                </tr>
+	            </table>
+	                <button class="logout-btn" id="logout" style="font-weight:bold;">Logout</button>
+	            </div>
+	        </div>
+        </div>
+
+        <!-- Farmer Details -->
+        <div class="farmer-details table-responsive">
+            <h3>Farmer Details</h3>
+            
+            <table id="farmerdata" class="table">
+                 <thead id="head">
+                    <tr>
+                        <th id="farname">Farmer Name</th>
+                        <th>Bags</th>
+                        <th>Place</th>
+                        <th>Mobile</th>
+                        <th>Variety</th>
+                        <th id='act'>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                	
+                </tbody>
+            </table>
+           	
+        </div>
+
+        <!-- Mill Data -->
+        <div class="mill-data table-responsive">
+            <h3>Mill Data</h3>
+	            <table class="table">
+	                <thead id="milldata_headingtag">
+	                    <tr>
+	                        <th>Mill Name</th>
+	                        <th>Location</th>
+	                        <th>Email</th>
+	                    </tr>
+	                </thead>
+	                <tbody id="milldata_body">
+	                
+	                </tbody>
+	            </table>
+            
+        </div>
+<br>
+       
+        <!-- Add New Mill -->
+        <div class="add-new-mill">
+            <h3>Add New Mill</h3>
+            <form autocomplete=off>
+                <label for="mname">Mill Name :</label>
+                <input type="text" id="millname" name="mname" placeholder="Enter Mill Name">
+
+                <label for="mlocation">Location :</label>
+                <input type="text" id="mlocation" name="mlocation" placeholder="Enter Location">
+
+                <!-- <label for="mmobile">Mobile :</label>
+                <input type="text" id="mmobile" name="mmobile" maxlength="10" placeholder="Enter Mobile">-->
+                
+                <label for="memail"><span style="color:red;font-size:18px;">*&nbsp;&nbsp;</span>Email :</label>
+                <input type="text" id="memail" name="memail" placeholder="Enter Email">
+
+                <button type="submit" id="addmillbtn">Add Mill</button>
+            </form>
+        </div>
+		<!-- Adding new Farmer -->
+		
+		<div class="add-new-farmer">
+			<h3>Enter New Farmer Details</h3>
+			<form autocomplete=off >
+				<div class="">
+					<label for="name">Full Name : </label><br>
+					<input type="text" id="fname" name="fname" placeholder="Enter Full Name"/><br>
+					<label for="mobile">Mobile : </label><br>
+					<input type="text" id="fmobile" name="fmobile" placeholder="Enter Mobile Number"/>
+					<br>
+					<label for="flocation">Place : </label><br>
+					<input type="text" id="flocation" name="flocation" placeholder="Enter Location"/>
+					
+					<div class="vb">
+						<div>
+							<label for="fvariety" >Variety : </label><br>
+							<input type="text" id="fvariety" name="fvariety" placeholder="Enter variety"/>
+						</div>
+						<div>
+							<label for="fbags" id="varname">No of Bags : </label><br>
+							<input type="number" id="fbags" name="fbags" placeholder="Enter no of bags"/>
+						</div>
+					</div>
+				</div>
+				<button class="btn1" type="submit">Submit</button>
+			</form>
+		</div>
+		
+			<div class="charts">		
+	       		 <canvas id="myChart" style="width:100%;max-width:600px;"></canvas>
+	       		 <p class="chartfooter">Remaining Stock Details</p>
+			</div>
+			
+			<!-- Today loadings graph -->
+			<div id="todaygraph">			
+				<!--  <canvas id="todayChart" style="width:100%;max-width:600px"></canvas> -->
+				<p class="chartfooter">Today Loading Details</p>
+			</div>
+			
+			
+		<!-- Farmer Bill start -->
+	<div class="modal fade " id="FarmerbillModal" tabindex="-1" role="dialog" aria-labelledby="FarmerbillModalLabel" >
+		  <div class="modal-dialog modal-dialog-scrollable" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header text-bg-success">
+		        <h5 class="modal-title m-auto" id="FarmerbillModalLabel">Farmer Bill</h5>
+		      </div>	
+			<div id="farmerReceipt" class="m-lg-3">
+					<form id="Receipt" autocomplete=off>
+					<table class="table">
+						<tr>
+							<td>
+								<label>
+									Name 
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Name " id="receiptname" name="inp"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Mobile
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Mobile " id="receiptmobile" name="inp"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Place
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Location " id="receiptplace" name="inp"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Variety
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Variety" id="receiptVariety" name="inp"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Bags
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Bags" id="receiptBags" name="inp"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>Weight </label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Weight" id="receiptWeight"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Rate
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Cost" id="receiptCost" name="inp"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Amount
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Amount" id="receiptAmt" name="inp"/>
+								<input type="hidden" value=""id="receiptDate"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									MC Cuttings
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="MC Cutting Rate" id="receiptLoadingAmt" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Labour Bill
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Labour Bill" id="receiptLabourBill"  />
+							</td>
+						</tr>
+						<tr>
+						    <td>
+								<label>
+									Due Amount
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Amount due" id="receiptOldAmt" />
+							</td>
+						</tr>
+						<tr>
+						<td>
+								<input type="submit" value="Submit" style="width:96%" class="receiptBtn" id="receiptbtn"/>
+						</td>
+						<td>
+								<span class="error" id="receipterr" style="font-size:18px;color:red;display:none"></span>
+						</td>
+						</tr>
+					</table>
+								<!--  <button id=whatsbtn><i class='bx bxl-whatsapp' ></i> Whatsapp</button> -->
+				</form>
+			</div>
+	 </div>
+	 </div>
+	 </div> 
+			
+ </div>	<!-- Dashboard  -->
+         <!-- Button to Open the Modal -->
+
+
+		<!-- The Modal -->
+		<div class="modal fade" id="todayLoadingsModal" tabindex="-1" role="dialog" aria-labelledby="todayLoadingsModalLabel" >
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="todayLoadingsModalLabel">Today Loadings</h5>
+		      </div>
+		      <div class="modal-body">
+		        <canvas id="todayChart" style="width:100%;max-width:600px"></canvas>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- Download mill data  modal -->
+		<div class="modal fade" id="downloadmilldataModal" tabindex="-1" role="dialog" aria-labelledby="downloadmilldataModalLabel" >
+		  <div class="modal-dialog modal-xl" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header text-bg-success">
+		        <h5 class="modal-title m-auto" id="downloadmilldataModalLabel">Download Mill Data</h5>
+		      </div>
+			  <div class="modal-body">	  		
+				  		<!-- download mill data -->
+				  <div id="dnmilldata" class="table-responsive m-lg-3">
+				     <table >
+				      <tr>
+				      <td>
+					  	  <label for="millname" id="millname">Mill name</label>
+						  <select id="selectmill"> 
+						  </select>
+					  </td>
+					  <td>
+						  <label for="from" id="hfrom">From: </label>
+						  <input type="date" id="from" autocomplete=off/>
+					  </td>
+					  <td>
+					  <label for="to" id="hto">To: </label>
+					  <input type="date" id="to" autocomplete=off/>
+					  </td>
+					  <td>
+					  <button id="GetDetails">Get Details</button>
+					  </td>
+					  <td><br>
+					  		<div class="downloadSection" id="send_email">
+					  		
+					  		</div>
+					  </td>
+					  </tr>
+					  </table>
+					  <p>&nbsp;&nbsp;&nbsp;****************************************************************************************************************************************************************</p>
+					  
+					  <div id="millbilldetails" class="table-responsive">
+					  		<div class="downloadSection">
+							  <button class="downloadBtn">
+							    Download
+							  </button>
+							</div>
+							<p id="err"></p>
+					  		<table class="table">
+							  <thead id="thead">
+							    <tr>
+							      <th>S.No</th>
+							      <th>Date</th>
+							      <th>Farmer Name</th>
+							      <th>Vehicle No</th>
+							      <th>Variety</th>
+							      <th>Bags</th>
+							      <th>Rate</th>
+							      <th>Weight</th>
+							      <th>Amount</th>
+							      <th>Remarks</th>
+							    </tr>
+							  </thead>
+							  <tbody id="millrow">
+							  </tbody>
+							</table>
+					  </div>
+				</div>
+			  </div>
+			</div>
+		</div>
+		  </div>
+	<!-- Reject farmer details modal -->
+	<div class="modal fade" id="RejectModal" tabindex="-1" role="dialog" aria-labelledby="RejectModalLabel" >
+	  <div class="modal-dialog modal-dialog-centered" role="document">
+	    <div class="modal-content">
+		  <div class="modal-header"> 		  
+        <h5 class="modal-title" id="RejectModalLabel"> </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span>&times;</span>
+	        </button>
+	      </div> 
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary" id="delete_user">Delete</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<!-- Edit farmer form modal  -->
+	<div class="modal fade" id="EditScrollable" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" style="display: none;">
+	  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Edit farmer Details</h5> 
+	      </div>
+	      <div class="modal-body">
+	        <!-- Farmer Bill End -->
+				<div id="editform" class="table-responsive">
+					<table class="table">
+						<tr>
+							<td>
+								<label for="name">Farmer name </label>
+							</td>
+							<td>
+								<input type="text" id="editFname"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="bags">Bags </label>
+							</td>
+							
+							<td>
+								<input type="text" id="editFbag"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="place">Place </label>
+							</td>
+							<td>
+								<input type="text" id="editFplace" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="mobile">Mobile </label>
+							</td>
+							<td>
+								<input type="text" id="editFmobile"/>
+								<input type="hidden" id="edithidden"/> 
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="variety">Variety </label>
+							</td>
+							<td>
+								<input type="text" id="editFvariety"/>
+							</td>
+						</tr>
+					</table>
+				</div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary" id="editsubmit">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- Mill Bill modal -->
+	<div class="modal fade" id="MillBillScrollable" tabindex="-1" aria-labelledby="MillBillScrollableTitle" style="display: none;">
+	  <div class="modal-dialog modal-xl">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="MillBillScrollableTitle">Registration Bill</h5>
+	      </div>
+	      <div class="modal-body">
+	        <!-- Mill data form -->
+  			<div class="formContainer table table-responsive">
+			    <table class="formTable table">
+			        <tr>
+			            <td class="left">
+			                <label for="farmername" class="formLabel">Farmer Name</label>
+			                <input type="text" class="formInput l" placeholder="Enter Full name" id="farmername" />
+			            </td>
+			            <td class="right">
+			                <label for="selectCommision" class="formLabel">Commission Person</label>
+			                <select class="formSelect r" id="selectCommision">
+			                    
+			                </select>
+			            </td>
+			        </tr>
+			        <tr>
+			        	<td class="left">
+			        		<label for="MillMObile" class="formLabel">Mobile Number</label>
+			                <input type="text" class="formInput l" id="MillMObile" placeholder="Farmer Mobile Number" />
+			        	</td>
+			        	<td class="right">
+			        		<label for="Milldate" class="formLabel">Date</label>
+			                <input type="text" class="formInput r" readonly value="" id="Milldate" />
+			        	</td>
+			        </tr>
+			        <tr>
+			            <td class="left">
+				                <label for="farmerplace" class="formLabel">Farmer Location </label>
+				                <input type="text" class="formInput l" placeholder="Enter Farmer Location" id="farmerplace"/>
+			            	</td>
+			            <td class="right">
+			                <label for="vehicle" class="formLabel">Vehicle No</label>
+			                <input type="text" class="formInput r" id="vehicle" placeholder="AP37xxNNNN" />
+			            </td>
+			        </tr>
+			        <tr>
+			            <td class="left">
+			                <label for="MillVariety" class="formLabel">Variety</label>
+			                <input type="text" class="formInput l" id="MillVariety" placeholder="Enter Variety " />
+			            </td>
+			            <td class="right">
+			                <label for="millbags" class="formLabel">Bags</label>
+			                <input type="text" class="formInput r" id="millbags" placeholder="Enter No of Bags" />
+			            </td>
+			        </tr>
+			        <tr>
+			            <td class="left">
+			                <label for="weight" class="formLabel">Weight</label>
+			                <input type="text" class="formInput l" placeholder="Only supports Numbers" id="millweight" />
+				    		<label for="millSelected" class="formLabel" style="margin-top:6%;font-size:20px"><b>Mill Name<b></label>
+			            </td>
+			            <td class="right">
+			                <label for="rate" class="formLabel">Cost</label>
+			                <input type="text" class="formInput r" placeholder="Enter Cost in Rs." id="millcost"/>
+			                 <select class="formSelect r" id="millSelected" style="margin-top:2.5%;width:90%">
+			                    
+			                </select>
+			            </td>
+			        </tr>
+			    </table>
+			        	<textarea class="form-control custom-textarea" id="millbillremarks" placeholder="Remarks"></textarea>
+			</div>
+			
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary w-100" id="millbillbtn">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- Commission details -->
+	
+	<div class="modal fade" id="CommissionModalToggle" aria-hidden="true" aria-labelledby="CommissionModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="CommissionModalToggleLabel">Enter Commission Details</h5>
+      </div>
+      <div class="modal-body text-center">
+        <form id="comform" autocomplete=off>
+					<table class="table table- ">
+						<tr>
+							<td>
+								<label>
+									Name 
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Name " id="comname"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Mobile
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Mobile " id="commobile"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label>
+									Place
+								</label>
+							</td>
+							<td>
+								<input type="text" placeholder="Enter Location " id="complace"/>
+							</td>
+						</tr>
+					</table>
+					<input type="submit" value="Submit" class="submitBtn" id="combtn"/>
+				</form><br>
+				<button class="getComData" data-target="#commission_data_ModalToggle2" data-toggle="modal" data-dismiss="modal">Get Commissions Data</button>
+				<span id="error"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="commission_data_ModalToggle2" tabindex="-1" aria-labelledby="commission_data_ModalToggleLabel2" style="display: none;">
+	  <div class="modal-dialog modal-xl">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 style="font-size:30px">Select Comission Person</h4> 
+	      </div>
+	      <div class="modal-body">
+				  <br>
+				  <label for="CommName" style="font-size:20px">&nbsp;&nbsp;&nbsp;Name</label>
+				  <select id="selectCom" autocomplete=off class="p-2 rounded-2" style="cursor:pointer">
+				  	
+				  </select>
+				  <label for="from" style="font-size:20px;margin-left:30px">&nbsp;&nbsp;From: </label>
+				  <input type="date" id="comdatafrom" class="p-2 rounded-2" autocomplete=off/>
+				  
+				  <label for="to" style="font-size:20px;margin-left:30px">&nbsp;&nbsp;To: </label>
+				  <input type="date" id="comdatato" class="p-2 rounded-2" autocomplete=off/>
+				  &nbsp;&nbsp;
+				  <button id="comgetdata" style="font-weight:bold;margin-left:30px;font-size:18px" class="btn btn-outline-primary p-2">Get Details</button><br><br>
+				  <p>&nbsp;&nbsp;&nbsp;*******************************************************************************************************************************************************************</p>
+				  
+			  		<div class="downloadSection">
+					  <button class="downloadBtn btn btn-outline-success" id="comdwbtn">
+					    Download
+					  </button>
+					</div>
+					<p id="comerr"></p>
+			  		<table class="table  table-responsive">
+						  <thead id="comthead">
+						    <tr>
+						      <th>S.No</th>
+						      <th>Date</th>
+						      <th>Farmer Name</th>
+						      <th>Bags </th>
+						      <th>Variety</th>
+						      <th>Rate </th>
+						      <th>Weight</th>
+						      <th>Amount</th>
+						    </tr>
+						  </thead>
+						  <tbody id="comrow">
+						  </tbody>
+					</table>
+      </div> 
+    </div>
+  </div>
+</div> 
+</div> <!-- content class --> 	
+	
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+   <!-- --> <script src="javscript/dashboard.js"></script> 
+</body>
+</html>
+

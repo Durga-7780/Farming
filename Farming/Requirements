@@ -1,0 +1,39 @@
+1, Install Mysql 
+2, Create database Farming
+3, 
+
+google api key AIzaSyD4aSVDwdR4GXtKWJ5NigWEaaAl9eJGIv0
+google auth key 233369056469-0q79pgn375ac51544qd6n9utn7l9m0nr.apps.googleusercontent.com
+
+
+pendings
+
+1,data is not retriving according to month admin page graph ==== completed 
+2, if user is login then he/she does not login again in other browser of same user details
+3, need to add users login section in admin page from there admin can logout users
+4, notification panel
+5, need to maintain monthly wise data and backup database
+6, only current day data should present in main tables from prvious data is in backup database  == not required
+7, need to change design in both today loadings remaining stock details in admin panel
+8, image change
+9, settings option
+10, user mobile verification through otp  when he joined in company
+11 qr code scanner for farmer bill download and mill bill download and 
+12 Mill bill to prnit pdf in good design --> main
+ 
+
+
+
+
+// pendings =========================
+
+forcelogout logined persons
+monthly data bar graph 
+today loadings not working
+Qr code scanning
+
+separate db maintain
+
+
+
+ 

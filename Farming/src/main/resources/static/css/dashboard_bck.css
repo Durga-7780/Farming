@@ -1,0 +1,491 @@
+@charset "ISO-8859-1";
+		.date-time {
+		    font-size: 16px;
+		    color: #555;
+		}
+		.name,.username{
+		font-size:18px;
+		color:black;
+		}
+		
+		.profile-section {
+		    display: flex;
+		    align-items: center;
+		    position: relative;
+		    z-index:1;
+		}
+		
+		.profile-image {
+		    width: 40px;
+		    height: 40px;
+		    border-radius: 50%;
+		    cursor: pointer;
+		}
+		
+		.profile-info {
+		    display: none; /* Hidden initially */
+		    flex-direction: column;
+		    position: absolute;
+		    top: 50px;
+		    right: 0;
+		    width:705%;
+		    background-color: #fff;
+		    padding: 10px;
+		    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		    border-radius: 5px;
+		}
+		
+		.profile-info p {
+		    margin: 5px 0;
+		}
+		
+		.logout-btn {
+		    padding: 5px 10px;
+		    background-color: #ff4b4b;
+		    color: white;
+		    border: none;
+		    border-radius: 5px;
+		    cursor: pointer;
+		}
+		
+		.logout-btn:hover {
+		    background-color: #ff3333;
+		}
+		.header {
+		    grid-column: span 3;
+		    background-color: #004d40;
+		    color: white;
+		    padding: 20px;
+		    display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		}
+		.loadingstoday, .mill-data-section, .farmer-bill-section, .mill-bill-section, .profile-section,.todaytext{
+		    margin: 0 10px;
+		    padding-top:5px;
+		    cursor:pointer;
+		    font-size:medium;
+		}
+		.farmer-details, .mill-data, .add-new-mill, .add-new-farmer, .charts, #todaygraph, #dnmilldata, .formContainer, #addcomission, #displayCommData ,#farmerReceipt, #editform{
+		    background-color: #ffffff;
+		    padding: 20px;
+		    border-radius: 8px;
+		    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		    height:41vh;
+		    overflow:auto;
+		}
+		
+		.farmer-details{
+			width:203%;
+		}
+		.mill-data{
+			width:100%;
+			margin-left:104%;
+		}
+		.add-new-farmer input[type='text'],input[type='number']{
+			margin-top:10px;
+			margin-bottom:8px;
+			width:100%;
+		}
+		h3 {
+		    margin-bottom: 15px;
+		}
+		
+		table {
+		    width: 100%;
+		    border-collapse: collapse;
+		    margin-bottom: 15px;
+		}
+		
+		th, td {
+		    text-align: left;
+		    padding: 8px;
+		    border-bottom: 1px solid #ddd;
+		}
+		
+		form {
+		    display: flex;
+		    flex-direction: column;
+		    gap: 10px;
+		}
+		
+		input[type="text"], input[type="number"] {
+		    padding: 8px;
+		    border-radius: 4px;
+		    border: 1px solid #ccc;
+		}
+
+		button {
+		    padding: 10px;
+		    background-color: #004d40;
+		    color: white;
+		    border: none;
+		    border-radius: 4px;
+		    cursor: pointer;
+		}
+		
+		button:hover {
+		    background-color: #00796b;
+		}
+		
+		.loading-stats, .bill-stats {
+		    font-size: 18px;
+		    font-weight: bold;
+		} 
+		* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto;
+            gap: 20px;
+            padding: 20px;
+        }
+        .loadingstoday{
+        	margin-left:20%;
+        }
+    
+	    #fbags,#varname{
+	    	margin-left:10%;
+	    }
+		.vb{
+			display:flex;
+		}
+		.accept {
+		    background-color: #28a745; /* Green */
+		}
+		
+		.reject {
+		    background-color: #dc3545; /* Red */
+		}
+		#farmerdata{
+			width:100%;
+		}
+		#act{
+			width:20%;
+		}
+		#farname{
+			width:30%;
+		}
+		.chartfooter{
+			font-size:large;
+			font-weight:bold;
+			margin-left:30%;
+			margin-top:5%;
+		}
+		#todaygraph,#dnmilldata,.formContainer,#addcomission,#displayCommData{			
+			position:absolute;
+			top:15%;
+			width:35%;
+			left:30%;
+			display:none;
+			border:2px solid grey;
+		}
+		#addcomission{
+			height:55vh;
+		}
+		#dnmilldata,.formContainer,#displayCommData{
+		width:75%;
+		left:12%;
+		height:75vh;
+		}
+		#dnmilldata #hfrom{
+			margin-left:4%;
+		}
+		#dnmilldata #from{
+			margin-right:5%;
+		}
+		#dnmilldata label {
+		  margin-right: 10px;
+  		  font-size:large;
+		}
+		#displayCommData{
+			margin-left:8%;
+		}
+		#displayCommData input{
+			font-size:20px;
+		}
+		#displayCommData select{
+			font-size:20px;
+		} 
+		#dnmilldata #millname{
+			margin-left:3%;
+		}
+		#dnmilldata select{
+		  width:auto;
+		  padding:5px 10px;
+		  font-size:20px;
+		  border-radius: 4px;
+		  border: 1px solid #ccc;
+		  text-transform:Capitalize;
+		}
+		#dnmilldata select option{
+			font-size:20px;
+			text-transform:Capitalize;
+		}
+		#dnmilldata input {
+		   margin-right: 20px;
+		  width: 180px;  
+		  height: 35px;  
+		  font-size: 16px; 
+		  padding: 5px;
+		  border-radius: 4px;
+		  border: 1px solid #ccc;
+		}
+		
+		#dnmilldata #to
+		{
+			margin-right:3%;
+		}
+		
+		#GetDetails{
+		  background-color: #4CAF50;
+		  color: white;
+		  border: none;
+		  padding: 10px;
+		  cursor: pointer;
+		  font-weight:bold;
+		  font-size:15px;
+		  border-radius: 3px;
+		}
+		
+		#GetDetails:hover {
+		  background-color: #45a049;
+		}
+		#close1,#millclose,#receiptclose,#editformclose,#addcomissionclose,#displayCommclose{
+			font-size:45px;
+			color:#dc3545;
+			margin-left:94%;
+			cursor:pointer;
+		}
+		#receiptclose{
+			margin-left:85%;
+			position:absolute;
+			top:3%;
+		}
+		#close1:hover{
+			color:red;
+		}
+		#millclose{
+			margin-left:60%;
+			font-size:40px
+		}
+		#millclose:hover{
+		color:red;
+		}
+		#addcomissionclose:hover{
+		color:red;
+		}
+	    .downloadSection {
+		  text-align: right;
+		  margin-bottom: 10px;
+		}
+		
+		.downloadBtn {
+		  background-color: #4CAF50;
+		  color: white;
+		  padding: 10px 20px;
+		  font-size: 16px;
+		  border: none;
+		  border-radius: 5px;
+		  cursor: pointer;
+		}
+		
+		.downloadBtn i {
+		  margin-right: 5px;
+		}
+		
+		.downloadBtn:hover {
+		  background-color: #45a049;
+		}
+		.bx{
+		font-size:30px;
+		}
+	
+		.submitBtn,#receiptbtn, #whatsbtn {
+		  padding: 10px 20px;
+		  background-color: #4CAF50;
+		  color: white;
+		  border: none;
+		  border-radius: 5px;
+		  font-size: 16px;
+		  cursor: pointer;
+		}
+		
+		.submitBtn:hover {
+		  background-color: #45a049;
+		}
+		#receiptbtn:hover{
+			background-color: #45a049;
+		}
+		
+		.formContainer{
+			height:79vh;
+		}
+		.formCont {
+			    margin: 0 auto;
+			    padding: 20px;
+			    border: 1px solid #ccc;
+			    border-radius: 10px;
+			    background-color: white;
+			    height:65vh;
+			}
+			
+			.formTable {
+			    width: 100%;
+			    border-collapse: collapse; 
+			}
+			
+			.formTable td {
+			    padding: 10px;
+			    vertical-align: top; 
+			}
+			
+			.formLabel {
+			    display: block;
+			    font-size: 16px;
+			    margin-bottom: 5px;
+			    color: #333;
+			}
+			
+			.formInput,
+			.formSelect {
+			    width: 80%;
+			    padding: 10px;
+			    font-size: 18px;
+			    border: 1px solid #ccc;
+			    border-radius: 5px;
+			    box-sizing: border-box; 
+			    text-transform:Capitalize;
+			}
+			.formInput:disabled {
+			    background-color: #f0f0f0; 
+			    color: #666; 
+			    cursor: not-allowed; 
+			}
+			#millSelected{
+				width:100%;
+			}
+			#comform{
+		     	padding:15px 30px;
+				border:1px solid #ccc;
+				border-radius:6px;
+				font-size:20px;
+			}
+			#comform label{
+				font-weight:bold;
+			}
+			#comform input{
+				width:100%;
+				font-size:20px;
+			}
+			#error{
+				font-size:18px;
+				color:green;
+				font-weight:bolder;
+				text-transform:capitalize;
+			}
+			.farmer_place{
+			    position:absolute;
+				top:31.5%;
+				left:24%;
+				width:25.3%;
+			}
+			#vehicle{
+				 text-transform: uppercase;
+			}
+			#farmerReceipt,#editform{
+				height:85vh;
+				position:absolute;
+				top:13%;
+				left:30%;
+				border:2px solid grey;
+				max-width:800px;
+				display:none;
+			}
+			#farmerReceipt table tr td{
+				border:0px;
+			}
+			#farmerReceipt{
+				width:38%;
+			}
+			#receiptname , #receiptmobile, #receiptplace, #receiptVariety, #receiptBags, #receiptCost, #receiptAmt, #receiptWeight, #receiptLoadingAmt,#receiptLabourBill,#receiptOldAmt{
+				width:95%;
+				font-size:18px;
+			}
+			#receiptbtn,#whatsbtn,#editsubmit,.getComData{
+				width:45%;
+			}
+			#whatsbtn{
+				position:absolute;
+				top:87%;
+				left:48%;
+				padding:7px;
+			}
+			#whatsbtn .bx{
+				font-size:20px;
+			}
+			#whatsbtn:hover{
+				background-color: #45a049;
+			}
+			#receiptLabourBill{
+				width:36%;
+			}
+			#receiptOldAmt{
+				width:36%;
+			}
+			.left{
+			width:45%;
+			}
+			.right{
+				width:50%;
+			}
+			.l{
+				width:85%;
+			}
+			.r{
+			width:90%;
+			}
+			
+			#editform{
+			    display:block;
+			    width:40%;
+			    height:55vh;
+				border:1px solid grey;
+				padding:15px 20px;
+				display:none;
+			}
+			#editform label{
+				font-size:20px;
+			}
+			#editform input{
+				width:100%;
+				font-size:18px;
+			}
+			#editsubmit{
+				width:100%;
+				font-size:20px
+			}
+			.getComData{
+				width:100%;
+				font-size:20px;
+				text-transform:capitalize;
+				font-weight:bold;
+			}
+			#addcomissionclose{
+				margin:0px;
+			}
+			#displayCommData{
+				width:60%;
+				height:70vh;
+			}
+			#dnmilldata{
+				width:79%;
+			}
