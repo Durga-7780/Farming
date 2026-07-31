@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  height: 100dvh;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+/* Prevent iOS input zoom */
+@supports (-webkit-touch-callout: none) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+
+::selection {
+  background: #D9A441;
+  color: #163832;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #B8C4BC transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #B8C4BC;
+  border-radius: 8px;
+}
+
+.grain-rail {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #D9A441 0px,
+    #D9A441 3px,
+    transparent 3px,
+    transparent 10px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #D9A441;
+  outline-offset: 2px;
+}
