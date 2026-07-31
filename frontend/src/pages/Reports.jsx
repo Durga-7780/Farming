@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { FileText, Download, TrendingUp, ShoppingCart, Users, Factory, Warehouse, Calendar, CheckCircle } from 'lucide-react'
 import api from '../api/client'
 import { Button, Badge } from '../components/ui.jsx'
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export default function Reports() {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const [summary, setSummary] = useState(null)
   const [farmersCount, setFarmersCount] = useState(200)
@@ -17,32 +19,32 @@ export default function Reports() {
 
   const reportTypes = [
     {
-      title: 'Farmer Procurement Statement',
-      desc: 'Comprehensive list of all 200 farmers, quantities harvested, moisture readings, and total costs.',
+      title: t('rep_1_title'),
+      desc: t('rep_1_desc'),
       icon: Users,
       format: 'CSV / PDF',
       badgeTone: 'info',
       to: '/farmers'
     },
     {
-      title: 'Mill Dispatch & Settlement Report',
-      desc: 'Dispatches, gate pass numbers, target mills, unload statuses, and settlement balances.',
+      title: t('rep_2_title'),
+      desc: t('rep_2_desc'),
       icon: Factory,
       format: 'CSV / PDF',
       badgeTone: 'indigo',
       to: '/dispatch'
     },
     {
-      title: 'Financial Purchases & Sales Ledger',
-      desc: 'Complete MTD & YTD purchase vouchers vs mill sale invoices summary.',
+      title: t('rep_3_title'),
+      desc: t('rep_3_desc'),
       icon: TrendingUp,
       format: 'CSV / PDF',
       badgeTone: 'success',
       to: '/sales'
     },
     {
-      title: 'Warehouse Grain Inventory Audit',
-      desc: 'Stock balances across Paddy, Maize, Cotton, Chilli, Black Gram, and Groundnut.',
+      title: t('rep_4_title'),
+      desc: t('rep_4_desc'),
       icon: Warehouse,
       format: 'CSV / PDF',
       badgeTone: 'warning',
@@ -64,8 +66,8 @@ export default function Reports() {
             <FileText size={22} />
           </div>
           <div>
-            <h1 className="font-display font-800 text-[24px] text-slate-950 dark:text-white tracking-tight">Enterprise Reports &amp; Statements</h1>
-            <p className="text-slate-700 dark:text-slate-400 font-semibold text-[14px] mt-0.5">Audit reports, financial ledgers, and procurement statements</p>
+            <h1 className="font-display font-800 text-[24px] text-slate-950 dark:text-white tracking-tight">{t('reports_title')}</h1>
+            <p className="text-slate-700 dark:text-slate-400 font-semibold text-[14px] mt-0.5">{t('reports_sub')}</p>
           </div>
         </div>
       </div>
@@ -76,44 +78,44 @@ export default function Reports() {
           onClick={() => navigate('/purchases')}
           className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-1 cursor-pointer hover:border-blue-500 dark:hover:border-sky-400 hover:shadow-md transition-all group"
         >
-          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">Total Purchases Value</div>
+          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">{t('total_purchases_val')}</div>
           <div className="font-mono text-[22px] font-extrabold text-blue-700 dark:text-sky-400">
             {fmt(summary?.month_purchase_total || 2965053)}
           </div>
-          <div className="text-[11.5px] text-blue-600 dark:text-sky-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">View Purchases &rarr;</div>
+          <div className="text-[11.5px] text-blue-600 dark:text-sky-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">{t('view')} &rarr;</div>
         </div>
 
         <div
           onClick={() => navigate('/sales')}
           className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-1 cursor-pointer hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-md transition-all group"
         >
-          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Total Sales Billed</div>
+          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{t('total_sales_billed')}</div>
           <div className="font-mono text-[22px] font-extrabold text-indigo-700 dark:text-indigo-400">
             {fmt(summary?.month_sales_total || 5200000)}
           </div>
-          <div className="text-[11.5px] text-indigo-600 dark:text-indigo-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">View Sales &rarr;</div>
+          <div className="text-[11.5px] text-indigo-600 dark:text-indigo-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">{t('view')} &rarr;</div>
         </div>
 
         <div
           onClick={() => navigate('/stock')}
           className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-1 cursor-pointer hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-md transition-all group"
         >
-          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Live Inventory Stock</div>
+          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{t('live_grain_stock')}</div>
           <div className="font-mono text-[22px] font-extrabold text-emerald-700 dark:text-emerald-400">
             {(summary?.current_stock_qty || 9536).toLocaleString('en-IN')} qtl
           </div>
-          <div className="text-[11.5px] text-emerald-600 dark:text-emerald-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">View Stock &rarr;</div>
+          <div className="text-[11.5px] text-emerald-600 dark:text-emerald-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">{t('view')} &rarr;</div>
         </div>
 
         <div
           onClick={() => navigate('/farmers')}
           className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-1 cursor-pointer hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-md transition-all group"
         >
-          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Registered Farmers</div>
+          <div className="text-[12.5px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{t('registered_farmers')}</div>
           <div className="font-mono text-[22px] font-extrabold text-slate-950 dark:text-white">
             {farmersCount}
           </div>
-          <div className="text-[11.5px] text-amber-600 dark:text-amber-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">View Directory &rarr;</div>
+          <div className="text-[11.5px] text-amber-600 dark:text-amber-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">{t('view')} &rarr;</div>
         </div>
       </div>
 
@@ -138,7 +140,7 @@ export default function Reports() {
             <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
               <Badge tone={rep.badgeTone} size="md">{rep.format}</Badge>
               <Button variant="primary" size="md" onClick={(e) => downloadReport(rep.title, e)} className="font-bold">
-                <Download size={15} /> Export Statement
+                <Download size={15} /> {t('export_statement')}
               </Button>
             </div>
           </div>
