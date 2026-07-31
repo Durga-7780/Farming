@@ -443,7 +443,7 @@ export default function Dashboard() {
                     </Badge>
                   </div>
                   <div className="text-[13.5px] text-slate-900 dark:text-slate-100 font-semibold mt-0.5">
-                    <strong className="text-slate-950 dark:text-white font-extrabold">{d.farmer_name}</strong> &rarr; <span className="text-indigo-700 dark:text-indigo-400 font-extrabold">{d.mill_name}</span>
+                    <strong className="text-slate-950 dark:text-white font-extrabold">{t(d.farmer_name)}</strong> &rarr; <span className="text-indigo-700 dark:text-indigo-400 font-extrabold">{t(d.mill_name)}</span>
                   </div>
                 </div>
 

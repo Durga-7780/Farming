@@ -68,16 +68,47 @@ const nameTokenMap = {
   'Nagendra': 'నాగేంద్ర',
   'Phani': 'ఫణి',
   'Pavan': 'పవన్',
+  'Pawan': 'పవన్',
   'Kalyan': 'కళ్యాణ్',
   'Venkata': 'వెంకట',
+  'Sundar': 'సుందర్',
+  'Gupta': 'గుప్తా',
+  'Jagadeeshwara': 'జగదీశ్వర',
   'Bulli': 'బుల్లి',
   'Chinna': 'చిన్న',
-  'Pedda': 'పెద్ద'
+  'Pedda': 'పెద్ద',
+  // Locations & Roads
+  'Armoor': 'ఆర్మూర్',
+  'Nandyal': 'నంద్యాల',
+  'Highway': 'హైవే',
+  'Port': 'పోర్ట్',
+  'Road': 'రోడ్డు',
+  'Kakinada': 'కాకినాడ',
+  'Kurnool': 'కర్నూలు',
+  'Nizamabad': 'నిజామాబాద్',
+  'AP': 'ఆంధ్రప్రదేశ్',
+  'TS': 'తెలంగాణ',
+  'Autonagar': 'ఆటోనగర్',
+  'Vijayawada': 'విజయవాడ',
+  'Warangal': 'వరంగల్',
+  'Jangaon': 'జనగామ',
+  'Industrial': 'ఇండస్ట్రియల్',
+  'Estate': 'ఎస్టేట్',
+  'Miryalaguda': 'మిర్యాలగూడ',
+  'Bypass': 'బైపాస్',
+  'Eluru': 'ఏలూరు',
+  'Piduguralla': 'పిడుగురాళ్ళ',
+  'Main': 'మెయిన్',
+  'Huzurabad': 'హుజూరాబాద్',
+  'Khammam': 'ఖమ్మం',
+  'Suryapet': 'సూర్యాపేట',
+  'Tenali': 'తెనాలి',
+  'Guntur': 'గుంటూరు'
 }
 
 function transliterateNameToTelugu(nameStr) {
   if (!nameStr || typeof nameStr !== 'string') return nameStr
-  const tokens = nameStr.split(/(\s+|\(|\)|\/|-)/)
+  const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,)/)
   return tokens.map((token) => nameTokenMap[token] || token).join('')
 }
 

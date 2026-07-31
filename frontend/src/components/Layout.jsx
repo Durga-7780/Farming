@@ -98,7 +98,7 @@ export default function Layout({ children }) {
     <div className="min-h-screen bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 flex transition-colors duration-200">
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex md:flex-col shrink-0 bg-slate-900 dark:bg-slate-950 border-r border-slate-800 text-white relative shadow-xl transition-all duration-300 ${
+        className={`hidden md:flex md:flex-col shrink-0 bg-slate-900 dark:bg-slate-950 border-r border-slate-800 text-white sticky top-0 h-screen z-30 shadow-xl transition-all duration-300 ${
           isCollapsed ? 'w-20' : 'w-64'
         }`}
       >
