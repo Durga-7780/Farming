@@ -193,14 +193,14 @@ export default function Payments() {
   const columns = [
     {
       key: 'party_name',
-      label: tab === 'farmer' ? t('farmer_name') : t('mill_name'),
+      label: tab === 'farmer' ? t('farmer') : t('mill'),
       sortable: true,
       render: (_, row) => (
         <div className="flex items-center gap-2">
           <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${tab === 'farmer' ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-400' : 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400'}`}>
             {tab === 'farmer' ? <ArrowUpRight size={14} /> : <ArrowDownLeft size={14} />}
           </div>
-          <span className="font-extrabold text-slate-950 dark:text-slate-100">{row.farmer_name || row.mill_name || '—'}</span>
+          <span className="font-extrabold text-slate-950 dark:text-slate-100">{t(row.farmer_name) || t(row.mill_name) || '—'}</span>
         </div>
       )
     },

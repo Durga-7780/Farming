@@ -2,6 +2,85 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 
 const LanguageContext = createContext()
 
+const nameTokenMap = {
+  'Anand': 'ఆనంద్',
+  'Chari': 'చారి',
+  'Murthy': 'మూర్తి',
+  'Prasad': 'ప్రసాద్',
+  'Anjaneyulu': 'ఆంజనేయులు',
+  'Reddy': 'రెడ్డి',
+  'Ashok': 'అశోక్',
+  'Lokesh': 'లోకేష్',
+  'Sharma': 'శర్మ',
+  'Madhav': 'మాధవ్',
+  'Rao': 'రావు',
+  'Gopal': 'గోపాల్',
+  'Kumar': 'కుమార్',
+  'Subba': 'సుబ్బా',
+  'Chowdary': 'చౌదరి',
+  'Lakshmana': 'లక్ష్మణ',
+  'Koundinya': 'కౌండిన్య',
+  'Babu': 'బాబు',
+  'Suresh': 'సురేష్',
+  'Venkateswara': 'వేంకటేశ్వర',
+  'Satyanarayana': 'సత్యనారాయణ',
+  'Ramesh': 'రమేష్',
+  'Murali': 'మురళి',
+  'Balaji': 'బాలాజీ',
+  'Annapurna': 'అన్నపూర్ణ',
+  'Krishna': 'కృష్ణ',
+  'Rama': 'రామ',
+  'Vijaya': 'విజయ',
+  'Durga': 'దుర్గా',
+  'Lakshmi': 'లక్ష్మీ',
+  'Naidu': 'నాయుడు',
+  'Raju': 'రాజు',
+  'Venkatesh': 'వెంకటేష్',
+  'Srinivas': 'శ్రీనివాస్',
+  'Srinivasa': 'శ్రీనివాస',
+  'Narayana': 'నారాయణ',
+  'Koteswara': 'కోటేశ్వర',
+  'Siva': 'శివ',
+  'Shiva': 'శివ',
+  'Shankar': 'శంకర్',
+  'Sankar': 'శంకర్',
+  'Sekhar': 'శేఖర్',
+  'Shekhar': 'శేఖర్',
+  'Venkat': 'వెంకట్',
+  'Chandra': 'చంద్ర',
+  'Mohan': 'మోహన్',
+  'Kiran': 'కిరణ్',
+  'Rajesh': 'రాజేష్',
+  'Naresh': 'నరేష్',
+  'Mahesh': 'మహేష్',
+  'Dinesh': 'దినేష్',
+  'Ganesh': 'గణేష్',
+  'Bhanu': 'భాను',
+  'Prakash': 'ప్రకాష్',
+  'Jagadeesh': 'జగదీష్',
+  'Venu': 'వేణు',
+  'Bhaskar': 'భాస్కర్',
+  'Venkataramana': 'వేంకటరమణ',
+  'Ramana': 'రమణ',
+  'Apparao': 'అప్పారావు',
+  'Subbarao': 'సుబ్బారావు',
+  'Nageswara': 'నాగేశ్వర',
+  'Nagendra': 'నాగేంద్ర',
+  'Phani': 'ఫణి',
+  'Pavan': 'పవన్',
+  'Kalyan': 'కళ్యాణ్',
+  'Venkata': 'వెంకట',
+  'Bulli': 'బుల్లి',
+  'Chinna': 'చిన్న',
+  'Pedda': 'పెద్ద'
+}
+
+function transliterateNameToTelugu(nameStr) {
+  if (!nameStr || typeof nameStr !== 'string') return nameStr
+  const tokens = nameStr.split(/(\s+|\(|\)|\/|-)/)
+  return tokens.map((token) => nameTokenMap[token] || token).join('')
+}
+
 export const translations = {
   en: {
     // Navigation
@@ -60,7 +139,18 @@ export const translations = {
     unloaded: 'Unloaded',
     in_transit: 'In Transit',
 
-    // Column Labels
+    // Column Labels (direct matching)
+    code: 'CODE',
+    farmer: 'FARMER NAME',
+    mill: 'RICE MILL NAME',
+    target_mill: 'TARGET MILL',
+    produce_variety: 'PRODUCE VARIETY',
+    location_address: 'LOCATION / ADDRESS',
+    contact: 'CONTACT',
+    bags: 'BAGS',
+    weight_qtl: 'WEIGHT (QTL)',
+    total_cost: 'TOTAL COST',
+    moisture_mc: 'MOISTURE (MC)',
     code_col: 'CODE',
     farmer_col: 'FARMER NAME',
     mill_col: 'RICE MILL NAME',
@@ -98,6 +188,26 @@ export const translations = {
     'Groundnut': 'Groundnut',
     'Cotton': 'Cotton',
     'Maize': 'Maize',
+    
+    // Mandals & Districts
+    'Mandal': 'Mandal',
+    'Gudivada': 'Gudivada',
+    'Krishna': 'Krishna',
+    'Bhattiprolu': 'Bhattiprolu',
+    'Repalle': 'Repalle',
+    'Guntur': 'Guntur',
+    'Pentapadu': 'Pentapadu',
+    'Tadepalligudem': 'Tadepalligudem',
+    'West Godavari': 'West Godavari',
+    'East Godavari': 'East Godavari',
+    'Korutla': 'Korutla',
+    'Jagtial': 'Jagtial',
+    'Karimnagar': 'Karimnagar',
+    'Tenali': 'Tenali',
+    'Pedana': 'Pedana',
+    'Suryapet': 'Suryapet',
+    'Nizamabad': 'Nizamabad',
+    'Kurnool': 'Kurnool',
     
     // Mill Names
     'Sri Lakshmi Venkateswara Rice Mill': 'Sri Lakshmi Venkateswara Rice Mill',
@@ -226,6 +336,17 @@ export const translations = {
     in_transit: 'రవాణాలో ఉంది',
 
     // Column Labels (Telugu)
+    code: 'రైతు కోడ్',
+    farmer: 'రైతు పేరు',
+    mill: 'రైస్ మిల్లు పేరు',
+    target_mill: 'లక్ష్య మిల్లు',
+    produce_variety: 'పంట రకం',
+    location_address: 'చిరునామా / ప్రాంతం',
+    contact: 'ఫోన్ నంబరు',
+    bags: 'సంచుల సంఖ్య',
+    weight_qtl: 'బరువు (క్వింటాళ్ళు)',
+    total_cost: 'మొత్తం విలువ (₹)',
+    moisture_mc: 'తేమ శాతం (MC)',
     code_col: 'కోడ్',
     farmer_col: 'రైతు పేరు',
     mill_col: 'రైస్ మిల్లు పేరు',
@@ -264,6 +385,26 @@ export const translations = {
     'Cotton': 'పత్తి',
     'Maize': 'మొక్కజొన్న',
     'QUINTAL': 'క్వింటాల్',
+    
+    // Mandals & Districts (Telugu)
+    'Mandal': 'మండలం',
+    'Gudivada': 'గుడివాడ',
+    'Krishna': 'కృష్ణా జిల్లా',
+    'Bhattiprolu': 'భట్టిప్రోలు',
+    'Repalle': 'రేపల్లె',
+    'Guntur': 'గుంటూరు జిల్లా',
+    'Pentapadu': 'పెంటపాడు',
+    'Tadepalligudem': 'తాడేపల్లిగూడెం',
+    'West Godavari': 'పశ్చిమ గోదావరి జిల్లా',
+    'East Godavari': 'తూర్పు గోదావరి జిల్లా',
+    'Korutla': 'కోరుట్ల',
+    'Jagtial': 'జగిత్యాల',
+    'Karimnagar': 'కరీంనగర్ జిల్లా',
+    'Tenali': 'తెనాలి',
+    'Pedana': 'పెడన',
+    'Suryapet': 'సూర్యాపేట జిల్లా',
+    'Nizamabad': 'నిజామాబాద్ జిల్లా',
+    'Kurnool': 'కర్నూలు జిల్లా',
     
     // Mill Names (Telugu Transliteration)
     'Sri Lakshmi Venkateswara Rice Mill': 'శ్రీ లక్ష్మీ వేంకటేశ్వర రైస్ మిల్లు',
@@ -371,7 +512,12 @@ export function LanguageProvider({ children }) {
 
   const t = (key) => {
     if (!key) return ''
-    return translations[lang]?.[key] || translations['en']?.[key] || key
+    const translated = translations[lang]?.[key] || translations['en']?.[key]
+    if (translated) return translated
+    if (lang === 'te') {
+      return transliterateNameToTelugu(key)
+    }
+    return key
   }
 
   return (

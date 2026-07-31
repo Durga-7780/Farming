@@ -393,8 +393,8 @@ export default function Dashboard() {
                     {i + 1}
                   </span>
                   <div className="w-40 shrink-0">
-                    <div className="text-[14px] font-extrabold text-slate-950 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-sky-400 transition-colors truncate">{f.name}</div>
-                    <div className="text-[11.5px] text-slate-600 dark:text-slate-400 font-mono font-bold">{f.code} · {f.village}</div>
+                    <div className="text-[14px] font-extrabold text-slate-950 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-sky-400 transition-colors truncate">{t(f.name)}</div>
+                    <div className="text-[11.5px] text-slate-600 dark:text-slate-400 font-mono font-bold">{f.code} · {t(f.village)}</div>
                   </div>
                   <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                     <motion.div

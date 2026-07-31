@@ -173,7 +173,7 @@ export default function DataTable({
                 setSearch(e.target.value)
                 setCurrentPage(1)
               }}
-              placeholder={`Search ${title ? title.toLowerCase() : 'records'}...`}
+              placeholder={searchPlaceholder || t('search_placeholder')}
               className={`${inputClass} pl-10 pr-8 bg-slate-50 dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium text-[14px] min-h-[42px] py-2`}
             />
             {search && (

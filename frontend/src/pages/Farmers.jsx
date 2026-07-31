@@ -259,11 +259,11 @@ export default function Farmers() {
       sortable: true,
       render: (_, row) => (
         <div className="text-[12.5px] text-slate-800 dark:text-slate-200">
-          <div className="font-extrabold text-slate-950 dark:text-white">{row.village || row.place || '—'}</div>
+          <div className="font-extrabold text-slate-950 dark:text-white">{t(row.village) || t(row.place) || '—'}</div>
           {(row.mandal || row.district) && (
             <div className="text-slate-600 dark:text-slate-400 text-[11.5px] font-semibold flex items-center gap-1 mt-0.5">
               <MapPin size={11} className="text-slate-500 dark:text-slate-400" />
-              <span>{[row.mandal, row.district].filter(Boolean).join(', ')}</span>
+              <span>{[row.mandal ? `${t(row.mandal)} ${t('Mandal')}` : null, t(row.district)].filter(Boolean).join(', ')}</span>
             </div>
           )}
         </div>
