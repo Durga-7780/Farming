@@ -109,7 +109,7 @@ export default function Purchases() {
       key: 'farmer_name',
       label: t('farmer'),
       sortable: true,
-      render: (val) => <span className="font-extrabold text-slate-950 dark:text-white">{val || '—'}</span>
+      render: (val) => <span className="font-extrabold text-slate-950 dark:text-white">{t(val) || '—'}</span>
     },
     {
       key: 'produce_variety_name',
@@ -204,12 +204,12 @@ export default function Purchases() {
       <div className="flex items-start justify-between">
         <div>
           <span className="font-mono text-blue-600 dark:text-sky-400 font-bold text-[13px]">{p.purchase_no}</span>
-          <h4 className="font-display font-800 text-[15px] text-slate-950 dark:text-white">{p.farmer_name}</h4>
+          <h4 className="font-display font-800 text-[15px] text-slate-950 dark:text-white">{t(p.farmer_name)}</h4>
         </div>
         <Badge tone={statusTone[p.status]}>{p.status === 'approved' ? t('approved') : p.status}</Badge>
       </div>
       <div className="text-[13px] text-slate-700 dark:text-slate-300 space-y-1 py-2 border-y border-slate-100 dark:border-slate-800">
-        <div><span className="text-slate-500 dark:text-slate-400">{t('variety')}: </span><span className="font-bold text-slate-900 dark:text-white">{p.produce_variety_name}</span></div>
+        <div><span className="text-slate-500 dark:text-slate-400">{t('variety')}: </span><span className="font-bold text-slate-900 dark:text-white">{t(p.produce_variety_name)}</span></div>
         <div><span className="text-slate-500 dark:text-slate-400">{t('quantity_bags')}: </span><span className="font-mono font-bold text-slate-900 dark:text-white">{p.quantity} bags</span></div>
         <div><span className="text-slate-500 dark:text-slate-400">{t('rate_unit')}: </span><span className="font-mono text-slate-800 dark:text-slate-200">₹{p.rate_per_unit}</span></div>
       </div>
@@ -248,13 +248,13 @@ export default function Purchases() {
           <Field label="Farmer *">
             <select required className={inputClass} value={form.farmer_id} onChange={(e) => setForm({ ...form, farmer_id: e.target.value })}>
               <option value="">Select Farmer</option>
-              {farmers.map((f) => <option key={f.id} value={f.id}>{f.name} ({f.code})</option>)}
+              {farmers.map((f) => <option key={f.id} value={f.id}>{t(f.name)} ({f.code})</option>)}
             </select>
           </Field>
           <Field label="Produce Variety *">
             <select required className={inputClass} value={form.produce_variety_id} onChange={(e) => setForm({ ...form, produce_variety_id: e.target.value })}>
               <option value="">Select Variety</option>
-              {varieties.map((v) => <option key={v.id} value={v.id}>{v.name_en}</option>)}
+              {varieties.map((v) => <option key={v.id} value={v.id}>{t(v.name_en)}</option>)}
             </select>
           </Field>
 
@@ -299,13 +299,13 @@ export default function Purchases() {
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div>
                 <span className="text-[12px] font-mono text-blue-600 dark:text-sky-400 font-bold">{viewPurchase.purchase_no}</span>
-                <h3 className="font-display font-800 text-[18px] text-slate-950 dark:text-white">{viewPurchase.farmer_name}</h3>
+                <h3 className="font-display font-800 text-[18px] text-slate-950 dark:text-white">{t(viewPurchase.farmer_name)}</h3>
               </div>
               <Badge tone={statusTone[viewPurchase.status]}>{viewPurchase.status}</Badge>
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-[13.5px]">
-              <div><span className="text-slate-500">Variety:</span> <strong className="text-slate-900 dark:text-white">{viewPurchase.produce_variety_name}</strong></div>
+              <div><span className="text-slate-500">Variety:</span> <strong className="text-slate-900 dark:text-white">{t(viewPurchase.produce_variety_name)}</strong></div>
               <div><span className="text-slate-500">Bags:</span> <strong className="font-mono text-slate-900 dark:text-white">{viewPurchase.quantity}</strong></div>
               <div><span className="text-slate-500">Rate/Unit:</span> <strong className="font-mono text-slate-900 dark:text-white">₹{viewPurchase.rate_per_unit}</strong></div>
               <div><span className="text-slate-500">Gross Total:</span> <strong className="font-mono text-slate-900 dark:text-white">{fmt(viewPurchase.gross_amount)}</strong></div>

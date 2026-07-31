@@ -234,8 +234,8 @@ export default function Farmers() {
             {val?.[0] || 'F'}
           </div>
           <div>
-            <div className="font-extrabold text-slate-950 dark:text-white text-[14px]">{val}</div>
-            {row.aadhar && <div className="text-[11.5px] text-slate-600 dark:text-slate-400 font-mono">Aadhaar: {row.aadhar}</div>}
+            <div className="font-extrabold text-slate-950 dark:text-white text-[14px]">{t(val)}</div>
+            {row.aadhar && <div className="text-[11.5px] text-slate-600 dark:text-slate-400 font-mono">{t('Aadhaar')}: {row.aadhar}</div>}
           </div>
         </div>
       )
