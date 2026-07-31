@@ -12,15 +12,17 @@ export default function DataTable({
   data = [],
   searchKeys = [],
   filterFields = [],
-  onRowClick,
-  title,
-  subtitle,
-  action,
+  title = '',
+  subtitle = '',
+  action = null,
+  cardRender = null,
+  onRowClick = null,
   defaultSortKey = '',
-  defaultSortOrder = 'desc',
+  defaultSortOrder = 'asc',
   pageSizeOptions = [10, 25, 50, 100],
-  cardRender,
+  searchPlaceholder = ''
 }) {
+  const { t } = useLanguage()
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState(defaultSortKey || (columns[0]?.key || ''))
   const [sortOrder, setSortOrder] = useState(defaultSortOrder)
@@ -192,7 +194,7 @@ export default function DataTable({
             className="!min-h-[42px] !py-2 shrink-0 relative font-semibold"
           >
             <SlidersHorizontal size={15} />
-            <span>Filters</span>
+            <span>{t('filters')}</span>
             {activeFilterCount > 0 && (
               <span className="w-5 h-5 rounded-full bg-white dark:bg-slate-100 text-indigo-700 font-bold text-[11px] flex items-center justify-center -mr-1 shadow-sm">
                 {activeFilterCount}
@@ -208,7 +210,7 @@ export default function DataTable({
               title="Reset all filters"
             >
               <RotateCcw size={13} />
-              <span className="hidden md:inline">Reset</span>
+              <span className="hidden md:inline">{t('reset')}</span>
             </button>
           )}
         </div>
@@ -223,7 +225,7 @@ export default function DataTable({
             title="Export data to CSV"
           >
             <Download size={15} />
-            <span className="hidden md:inline">Export</span>
+            <span className="hidden md:inline">{t('export')}</span>
           </Button>
 
           {/* View Mode Toggle */}

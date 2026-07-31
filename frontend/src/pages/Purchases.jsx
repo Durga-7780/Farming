@@ -115,7 +115,7 @@ export default function Purchases() {
       key: 'produce_variety_name',
       label: t('variety'),
       sortable: true,
-      render: (val) => val ? <Badge tone="info" size="sm"><Wheat size={11} /> {val}</Badge> : '—'
+      render: (val) => val ? <Badge tone="info" size="sm"><Wheat size={11} /> {t(val)}</Badge> : '—'
     },
     {
       key: 'quantity',

@@ -72,6 +72,18 @@ export const translations = {
     unloaded: 'Unloaded',
     in_transit: 'In Transit',
     
+    // Produce Variety Names
+    'Paddy - Fine': 'Paddy - Fine',
+    'Paddy - Common': 'Paddy - Common',
+    'Paddy - Sona Masuri': 'Paddy - Sona Masuri',
+    'Paddy - BPT 5204': 'Paddy - BPT 5204',
+    'Paddy - MTU 1010': 'Paddy - MTU 1010',
+    'Chilli': 'Chilli',
+    'Black Gram': 'Black Gram',
+    'Groundnut': 'Groundnut',
+    'Cotton': 'Cotton',
+    'Maize': 'Maize',
+    
     // Purchases Page
     procurement_purchases: 'Procurement & Purchases',
     purchase_subtitle: '100 purchase vouchers recorded from farmers',
@@ -227,6 +239,18 @@ export const translations = {
     unloaded: 'అన్‌లోడ్ అయింది',
     in_transit: 'రవాణాలో ఉంది',
     
+    // Produce Variety Names (Telugu)
+    'Paddy - Fine': 'వరి - సన్నాలు',
+    'Paddy - Common': 'వరి - రకం',
+    'Paddy - Sona Masuri': 'వరి - సోనా మసూరి',
+    'Paddy - BPT 5204': 'వరి - BPT 5204',
+    'Paddy - MTU 1010': 'వరి - MTU 1010',
+    'Chilli': 'మిర్చి / మిరప',
+    'Black Gram': 'మినుములు',
+    'Groundnut': 'వేరుశనగ',
+    'Cotton': 'పత్తి',
+    'Maize': 'మొక్కజొన్న',
+    
     // Purchases Page
     procurement_purchases: 'సేకరణ మరియు కొనుగోళ్లు',
     purchase_subtitle: 'రైతుల నుండి నమోదైన 100 కొనుగోలు వోచర్లు',
@@ -329,6 +353,7 @@ export function LanguageProvider({ children }) {
   }
 
   const t = (key) => {
+    if (!key) return ''
     return translations[lang]?.[key] || translations['en']?.[key] || key
   }
 
