@@ -74,9 +74,51 @@ const nameTokenMap = {
   'Sundar': 'సుందర్',
   'Gupta': 'గుప్తా',
   'Jagadeeshwara': 'జగదీశ్వర',
-  'Bulli': 'బుల్లి',
-  'Chinna': 'చిన్న',
-  'Pedda': 'పెద్ద',
+  'Varma': 'వర్మ',
+  'Verma': 'వర్మ',
+  'Chandrasekhar': 'చంద్రశేఖర్',
+  'Chandrashekar': 'చంద్రశేఖర్',
+  'Chandrashekhar': 'చంద్రశేఖర్',
+  'Chenna': 'చెన్న',
+  'Baskhar': 'భాస్కర్',
+  'Sudhakar': 'సుధాకర్',
+  'Prabhakar': 'ప్రభాకర్',
+  'Ratnakar': 'రత్నాకర్',
+  'Madhukar': 'మధుకర్',
+  'Diwakar': 'దివాకర్',
+  'Somasekhar': 'సోమశేఖర్',
+  'Rajashekhar': 'రాజశేఖర్',
+  'Rajashekar': 'రాజశేఖర్',
+  'Gopala': 'గోపాల',
+  'Govinda': 'గోవింద',
+  'Subrahmanyam': 'సుబ్రహ్మణ్యం',
+  'Subramanyam': 'సుబ్రహ్మణ్యం',
+  'Venkatrao': 'వెంకటరావు',
+  'Suryanarayana': 'సూర్యనారాయణ',
+  'Lakshminarayana': 'లక్ష్మీనారాయణ',
+  'Radhakrishna': 'రాధాకృష్ణ',
+  'Ramakrishna': 'రామకృష్ణ',
+  'Sitarama': 'సీతారామ',
+  'Sitaram': 'సీతారామ్',
+  'Hanumantha': 'హనుమంత',
+  'Veerabhadra': 'వీరభద్ర',
+  'Kondal': 'కొండల్',
+  'Mallikarjuna': 'మల్లికార్జున',
+  'Narsimha': 'నరసింహ',
+  'Narasimha': 'నరసింహ',
+  'Simhachalam': 'సింహాచలం',
+  'Tirupati': 'తిరుపతి',
+  'Tirupathi': 'తిరుపతి',
+  'Sastry': 'శాస్త్రి',
+  'Shastri': 'శాస్త్రి',
+  'Satish': 'సతీష్',
+  'Harish': 'హరీష్',
+  'Girish': 'గిరీష్',
+  'Nagesh': 'నాగేష్',
+  'Singh': 'సింగ్',
+  'Joshi': 'జోషి',
+  'Moorthy': 'మూర్తి',
+  'Choudhary': 'చౌదరి',
   // Locations & Roads
   'Armoor': 'ఆర్మూర్',
   'Nandyal': 'నంద్యాల',
@@ -103,13 +145,31 @@ const nameTokenMap = {
   'Khammam': 'ఖమ్మం',
   'Suryapet': 'సూర్యాపేట',
   'Tenali': 'తెనాలి',
-  'Guntur': 'గుంటూరు'
+  'Guntur': 'గుంటూరు',
+  // Initials
+  'M': 'ఎమ్',
+  'V': 'వి',
+  'P': 'పి',
+  'Ch': 'సిహెచ్',
+  'G': 'జి',
+  'K': 'కే',
+  'S': 'ఎస్',
+  'R': 'ఆర్',
+  'B': 'బి',
+  'D': 'డి',
+  'T': 'టి',
+  'A': 'ఎ'
 }
 
 function transliterateNameToTelugu(nameStr) {
   if (!nameStr || typeof nameStr !== 'string') return nameStr
-  const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,)/)
-  return tokens.map((token) => nameTokenMap[token] || token).join('')
+  const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,|\.)/)
+  return tokens.map((token) => {
+    if (nameTokenMap[token]) return nameTokenMap[token]
+    const trimmed = token.trim()
+    if (nameTokenMap[trimmed]) return nameTokenMap[trimmed]
+    return token
+  }).join('')
 }
 
 export const translations = {
