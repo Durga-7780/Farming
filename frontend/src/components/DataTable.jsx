@@ -5,6 +5,7 @@ import {
   Download, LayoutGrid, List, ChevronLeft, ChevronRight, SlidersHorizontal, Check
 } from 'lucide-react'
 import { Button, inputClass, Badge } from './ui.jsx'
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 export default function DataTable({
   columns = [],
@@ -409,7 +410,7 @@ export default function DataTable({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-[13.5px]">
               <thead>
-                <tr className="bg-slate-100/90 dark:bg-slate-950/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider font-extrabold text-[11.5px] select-none">
+                <tr className="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider font-extrabold text-[12px] select-none">
                   {columns.map((col) => {
                     const isSorted = sortKey === col.key
                     const isSortable = col.sortable !== false
@@ -458,7 +459,7 @@ export default function DataTable({
                     {columns.map((col) => (
                       <td
                         key={col.key}
-                        className={`py-3.5 px-4 text-slate-900 dark:text-slate-100 font-medium ${
+                        className={`py-3.5 px-4 text-slate-950 dark:text-slate-100 font-semibold text-[13.5px] ${
                           col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''
                         }`}
                       >

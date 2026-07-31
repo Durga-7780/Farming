@@ -13,6 +13,7 @@ import api from '../api/client'
 import StatCard from '../components/StatCard.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import { Button, Badge } from '../components/ui.jsx'
 
 const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
@@ -74,6 +75,7 @@ const defaultDispatches = [
 export default function Dashboard() {
   const { user } = useAuth()
   const { isDark } = useTheme()
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const [summary, setSummary] = useState(null)
   const [trend, setTrend] = useState([])
@@ -116,7 +118,7 @@ export default function Dashboard() {
   const displayTopFarmers = topFarmers.length > 0 ? topFarmers : defaultTopFarmers
   const displayDispatches = dispatches.length > 0 ? dispatches : defaultDispatches
 
-  const tickColor = isDark ? '#94a3b8' : '#0f172a'
+  const tickColor = isDark ? '#f8fafc' : '#0f172a'
   const gridColor = isDark ? '#1e293b' : '#e2e8f0'
   const tooltipBg = isDark ? '#0f172a' : '#ffffff'
   const tooltipBorder = isDark ? '#334155' : '#cbd5e1'
@@ -130,28 +132,28 @@ export default function Dashboard() {
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
             <Badge tone="indigo" size="sm">
-              <ShieldCheck size={13} /> Enterprise Control Tower
+              <ShieldCheck size={13} /> {t('enterprise_control_tower')}
             </Badge>
-            <span className="text-[12px] text-blue-200 font-mono font-bold">System Status: Optimal</span>
+            <span className="text-[12px] text-blue-200 font-mono font-bold">{t('system_status')}</span>
           </div>
           <h1 className="font-display font-800 text-[26px] text-white tracking-tight">
-            Welcome back, {user?.name}
+            {t('welcome_back')}, {user?.name}
           </h1>
           <p className="text-blue-100 font-medium text-[14px] mt-1 max-w-xl">
-            Real-time procurement analytics across 200 registered farmers, mill dispatches, and warehouse inventory.
+            {t('realtime_procurement')}
           </p>
         </div>
 
         {/* Quick Shortcut Buttons */}
         <div className="relative z-10 flex flex-wrap items-center gap-2">
           <Button variant="primary" size="md" onClick={() => navigate('/farmers')} className="font-bold">
-            <Users size={16} /> Farmers Directory
+            <Users size={16} /> {t('farmers_directory')}
           </Button>
           <Button variant="accent" size="md" onClick={() => navigate('/dispatch')} className="font-bold">
-            <Truck size={16} /> New Dispatch
+            <Truck size={16} /> {t('new_dispatch')}
           </Button>
           <Button variant="ghost" size="md" onClick={() => navigate('/purchases')} className="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20 font-bold">
-            <ShoppingCart size={16} /> Purchases
+            <ShoppingCart size={16} /> {t('purchases')}
           </Button>
         </div>
       </div>
@@ -159,72 +161,72 @@ export default function Dashboard() {
       {/* 8 Multi-Color Glowing Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Today's Purchases"
+          label={t('todays_purchases')}
           value={fmt(summary?.todays_purchases || 123543)}
-          sublabel="Daily farmer procurement"
+          sublabel={t('daily_farmer_procurement')}
           icon={ShoppingCart}
           tone="primary"
           delay={0.05}
           to="/purchases"
         />
         <StatCard
-          label="Today's Sales"
+          label={t('todays_sales')}
           value={fmt(summary?.todays_sales || 216666)}
-          sublabel="Daily mill dispatches"
+          sublabel={t('daily_mill_dispatches')}
           icon={TrendingUp}
           tone="accent"
           delay={0.1}
           to="/sales"
         />
         <StatCard
-          label="Live Grain Stock"
+          label={t('live_grain_stock')}
           value={`${(summary?.current_stock_qty || 9536).toLocaleString('en-IN')} qtl`}
-          sublabel="Available warehouse stock"
+          sublabel={t('available_warehouse_stock')}
           icon={Warehouse}
           tone="success"
           delay={0.15}
           to="/stock"
         />
         <StatCard
-          label="Pending Farmer Payouts"
+          label={t('pending_farmer_payouts')}
           value={fmt(summary?.pending_farmer_payments || 889515)}
-          sublabel="Outstanding balance to pay"
+          sublabel={t('outstanding_balance_to_pay')}
           icon={Wallet}
           tone="warning"
           delay={0.2}
           to="/payments"
         />
         <StatCard
-          label="Pending Mill Receivables"
+          label={t('pending_mill_receivables')}
           value={fmt(summary?.pending_mill_payments || 1300000)}
-          sublabel="Collections due from mills"
+          sublabel={t('collections_due_from_mills')}
           icon={Factory}
           tone="danger"
           delay={0.25}
           to="/payments"
         />
         <StatCard
-          label="Registered Farmers"
+          label={t('registered_farmers')}
           value={summary?.total_farmers || 200}
-          sublabel="Active farmer network"
+          sublabel={t('active_farmer_network')}
           icon={Users}
           tone="info"
           delay={0.3}
           to="/farmers"
         />
         <StatCard
-          label="Monthly Purchases"
+          label={t('monthly_purchases')}
           value={fmt(summary?.month_purchase_total || 2965053)}
-          sublabel="MTD total procurement"
+          sublabel={t('mtd_total_procurement')}
           icon={ShoppingCart}
           tone="primary"
           delay={0.35}
           to="/purchases"
         />
         <StatCard
-          label="Monthly Mill Sales"
+          label={t('monthly_mill_sales')}
           value={fmt(summary?.month_sales_total || 5200000)}
-          sublabel="MTD total mill sales"
+          sublabel={t('mtd_total_mill_sales')}
           icon={TrendingUp}
           tone="accent"
           delay={0.4}
@@ -245,12 +247,12 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-display font-800 text-[18px] text-slate-950 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
-                Purchases vs Sales Trend (Last 14 Days)
+                {t('trend_title')}
               </h3>
-              <p className="text-[13px] text-slate-700 dark:text-slate-400 font-semibold mt-0.5">Comparing financial flow between farmer buys and mill billing</p>
+              <p className="text-[13px] text-slate-700 dark:text-slate-300 font-semibold mt-0.5">{t('trend_sub')}</p>
             </div>
             <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); navigate('/reports') }} className="font-bold">
-              Full Analytics &rarr;
+              {t('full_analytics')} &rarr;
             </Button>
           </div>
 
@@ -291,9 +293,9 @@ export default function Dashboard() {
         >
           <div>
             <h3 className="font-display font-800 text-[18px] text-slate-950 dark:text-white tracking-tight flex items-center gap-2 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
-              <PieChartIcon size={19} className="text-blue-600 dark:text-sky-400 font-bold" /> Produce Share
+              <PieChartIcon size={19} className="text-blue-600 dark:text-sky-400 font-bold" /> {t('produce_share')}
             </h3>
-            <p className="text-[13px] text-slate-700 dark:text-slate-400 font-semibold mt-0.5">Harvest volume proportion by variety</p>
+            <p className="text-[13px] text-slate-700 dark:text-slate-300 font-semibold mt-0.5">{t('produce_sub')}</p>
           </div>
 
           <div className="h-[220px] w-full my-auto">
@@ -334,12 +336,12 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-display font-800 text-[18px] text-slate-950 dark:text-white tracking-tight flex items-center gap-2 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
-              <MapPin size={19} className="text-emerald-600 dark:text-emerald-400" /> District Procurement Distribution
+              <MapPin size={19} className="text-emerald-600 dark:text-emerald-400" /> {t('district_dist')}
             </h3>
-            <p className="text-[13px] text-slate-700 dark:text-slate-400 font-semibold mt-0.5">Total harvested volume (quintals) across AP &amp; Telangana districts</p>
+            <p className="text-[13px] text-slate-700 dark:text-slate-300 font-semibold mt-0.5">{t('district_sub')}</p>
           </div>
           <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); navigate('/farmers') }} className="font-bold">
-            View Districts &rarr;
+            {t('view')} &rarr;
           </Button>
         </div>
 
@@ -371,10 +373,10 @@ export default function Dashboard() {
         >
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <h3 className="font-display font-800 text-[18px] text-slate-950 dark:text-white tracking-tight flex items-center gap-2 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
-              <Award size={19} className="text-amber-500" /> Top Farmers by Purchase Value
+              <Award size={19} className="text-amber-500" /> {t('top_farmers')}
             </h3>
             <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); navigate('/farmers') }} className="font-bold">
-              View All 200 &rarr;
+              {t('view_all_200')} &rarr;
             </Button>
           </div>
 
@@ -391,7 +393,7 @@ export default function Dashboard() {
                     {i + 1}
                   </span>
                   <div className="w-40 shrink-0">
-                    <div className="text-[14px] font-bold text-slate-950 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-sky-400 transition-colors truncate">{f.name}</div>
+                    <div className="text-[14px] font-extrabold text-slate-950 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-sky-400 transition-colors truncate">{f.name}</div>
                     <div className="text-[11.5px] text-slate-600 dark:text-slate-400 font-mono font-bold">{f.code} · {f.village}</div>
                   </div>
                   <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -419,10 +421,10 @@ export default function Dashboard() {
         >
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <h3 className="font-display font-800 text-[18px] text-slate-950 dark:text-white tracking-tight flex items-center gap-2 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
-              <Truck size={19} className="text-blue-600 dark:text-sky-400" /> Recent Mill Dispatches Feed
+              <Truck size={19} className="text-blue-600 dark:text-sky-400" /> {t('recent_dispatches')}
             </h3>
             <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); navigate('/dispatch') }} className="font-bold">
-              Dispatch Gate &rarr;
+              {t('dispatch_gate')} &rarr;
             </Button>
           </div>
 
@@ -437,7 +439,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-blue-700 dark:text-sky-400 font-extrabold text-[13px]">{d.dispatch_bill_no}</span>
                     <Badge tone={d.is_unloaded ? 'success' : 'warning'} size="sm">
-                      {d.is_unloaded ? 'Unloaded' : 'In Transit'}
+                      {d.is_unloaded ? t('unloaded') : t('in_transit')}
                     </Badge>
                   </div>
                   <div className="text-[13.5px] text-slate-900 dark:text-slate-100 font-semibold mt-0.5">

@@ -11,7 +11,9 @@ export function Field({ label, children, className = '' }) {
 }
 
 export const inputClass =
-  'w-full px-3.5 py-2.5 min-h-[44px] rounded-xl border border-slate-300 bg-white text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-600 transition-all shadow-sm'
+  'w-full px-3.5 py-2.5 min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-[14px] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-600 transition-all shadow-sm'
+
+export const selectClass = inputClass
 
 export function Button({ children, variant = 'primary', size = 'md', className = '', ...props }) {
   const variants = {

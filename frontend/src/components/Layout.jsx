@@ -4,72 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutGrid, Users, Factory, ShoppingCart, TrendingUp,
   Warehouse, Wallet, Receipt, FileText, Menu, X, LogOut, Wheat, Truck,
-  ChevronLeft, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, Clock, Bell, AlertTriangle, Check
+  ChevronLeft, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, Clock, Bell, AlertTriangle, Check, Globe
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import AIChatbot from './AIChatbot.jsx'
-
-const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', icon: LayoutGrid, end: true },
-  { to: '/farmers', label: 'Farmers', icon: Users },
-  { to: '/mills', label: 'Mills', icon: Factory },
-  { to: '/dispatch', label: 'Dispatch', icon: Truck },
-  { to: '/purchases', label: 'Purchases', icon: ShoppingCart },
-  { to: '/sales', label: 'Sales', icon: TrendingUp },
-  { to: '/stock', label: 'Stock', icon: Warehouse },
-  { to: '/payments', label: 'Payments', icon: Wallet },
-  { to: '/expenses', label: 'Expenses', icon: Receipt },
-  { to: '/reports', label: 'Reports', icon: FileText },
-]
-
-const MOBILE_ITEMS = NAV_ITEMS.filter((i) =>
-  ['/', '/farmers', '/dispatch', '/purchases', '/sales', '/payments'].includes(i.to)
-)
-
-const initialNotifications = [
-  {
-    id: 1,
-    title: 'Low Grain Stock Alert',
-    message: 'Paddy - MTU 1010 warehouse stock is running low (< 10%).',
-    time: '10 min ago',
-    type: 'danger',
-    unread: true,
-    to: '/stock'
-  },
-  {
-    id: 2,
-    title: 'Mill Unload Pending',
-    message: 'Pass DISP-2026-0003 is in transit to Kakatiya Agro Industries.',
-    time: '25 min ago',
-    type: 'warning',
-    unread: true,
-    to: '/dispatch'
-  },
-  {
-    id: 3,
-    title: 'Pending Farmer Disbursal',
-    message: '₹8,89,515 payout balance outstanding across 200 farmers.',
-    time: '1 hr ago',
-    type: 'info',
-    unread: true,
-    to: '/payments'
-  },
-  {
-    id: 4,
-    title: 'Purchase Order Approval',
-    message: '4 new farmer procurement vouchers require manager sign-off.',
-    time: '2 hrs ago',
-    type: 'primary',
-    unread: false,
-    to: '/purchases'
-  }
-]
 
 export default function Layout({ children }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
-  const [notifications, setNotifications] = useState(initialNotifications)
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return localStorage.getItem('agroledger_sidebar_collapsed') === 'true'
   })
@@ -77,9 +21,57 @@ export default function Layout({ children }) {
 
   const { user, logout } = useAuth()
   const { isDark, toggleTheme } = useTheme()
+  const { lang, setLang, t } = useLanguage()
   const location = useLocation()
   const navigate = useNavigate()
   const notifRef = useRef(null)
+
+  const NAV_ITEMS = [
+    { to: '/', label: t('dashboard'), icon: LayoutGrid, end: true },
+    { to: '/farmers', label: t('farmers'), icon: Users },
+    { to: '/mills', label: t('mills'), icon: Factory },
+    { to: '/dispatch', label: t('dispatch'), icon: Truck },
+    { to: '/purchases', label: t('purchases'), icon: ShoppingCart },
+    { to: '/sales', label: t('sales'), icon: TrendingUp },
+    { to: '/stock', label: t('stock'), icon: Warehouse },
+    { to: '/payments', label: t('payments'), icon: Wallet },
+    { to: '/expenses', label: t('expenses'), icon: Receipt },
+    { to: '/reports', label: t('reports'), icon: FileText },
+  ]
+
+  const MOBILE_ITEMS = NAV_ITEMS.filter((i) =>
+    ['/', '/farmers', '/dispatch', '/purchases', '/sales', '/payments'].includes(i.to)
+  )
+
+  const notifications = [
+    {
+      id: 1,
+      title: t('isTelugu') ? 'లైవ్ ధాన్యం స్టాక్ హెచ్చరిక' : 'Low Grain Stock Alert',
+      message: 'Paddy - MTU 1010 warehouse stock is running low (< 10%).',
+      time: '10 min ago',
+      type: 'danger',
+      unread: true,
+      to: '/stock'
+    },
+    {
+      id: 2,
+      title: t('isTelugu') ? 'మిల్లు అన్‌లోడ్ పెండింగ్' : 'Mill Unload Pending',
+      message: 'Pass DISP-2026-0003 is in transit to Kakatiya Agro.',
+      time: '25 min ago',
+      type: 'warning',
+      unread: true,
+      to: '/dispatch'
+    },
+    {
+      id: 3,
+      title: t('isTelugu') ? 'రైతు బకాయిల చెల్లింపు' : 'Pending Farmer Disbursal',
+      message: '₹8,89,515 payout balance outstanding across 200 farmers.',
+      time: '1 hr ago',
+      type: 'info',
+      unread: true,
+      to: '/payments'
+    }
+  ]
 
   useEffect(() => {
     localStorage.setItem('agroledger_sidebar_collapsed', isCollapsed)
@@ -90,7 +82,6 @@ export default function Layout({ children }) {
     return () => clearInterval(timer)
   }, [])
 
-  // Close notifications dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (notifRef.current && !notifRef.current.contains(event.target)) {
@@ -103,27 +94,14 @@ export default function Layout({ children }) {
 
   const unreadCount = notifications.filter((n) => n.unread).length
 
-  const handleNotificationClick = (notif) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, unread: false } : n))
-    )
-    setNotifOpen(false)
-    if (notif.to) navigate(notif.to)
-  }
-
-  const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
-  }
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 flex transition-colors duration-200">
-      {/* Desktop Deep Blue Sidebar */}
+      {/* Desktop Sidebar */}
       <aside
         className={`hidden md:flex md:flex-col shrink-0 bg-slate-900 dark:bg-slate-950 border-r border-slate-800 text-white relative shadow-xl transition-all duration-300 ${
           isCollapsed ? 'w-20' : 'w-64'
         }`}
       >
-        {/* Header Branding + Collapse Button */}
         <div className={`px-4 py-5 flex items-center justify-between border-b border-slate-800/90 bg-slate-950/40 ${isCollapsed ? 'justify-center' : ''}`}>
           <div
             className="flex items-center gap-3 cursor-pointer overflow-hidden"
@@ -152,7 +130,6 @@ export default function Layout({ children }) {
           )}
         </div>
 
-        {/* Expand button if collapsed */}
         {isCollapsed && (
           <div className="px-3 py-2 flex justify-center border-b border-slate-800">
             <button
@@ -165,7 +142,6 @@ export default function Layout({ children }) {
           </div>
         )}
 
-        {/* Nav Items List */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => (
             <NavLink
@@ -178,7 +154,7 @@ export default function Layout({ children }) {
                   isCollapsed ? 'justify-center px-0' : ''
                 } ${
                   isActive
-                    ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/30'
+                    ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-600/30'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                 }`
               }
@@ -233,7 +209,7 @@ export default function Layout({ children }) {
                     onClick={() => setDrawerOpen(false)}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3.5 py-3 rounded-xl text-[14px] font-medium ${
-                        isActive ? 'bg-blue-600 text-white font-semibold' : 'text-slate-400'
+                        isActive ? 'bg-blue-600 text-white font-bold' : 'text-slate-400'
                       }`
                     }
                   >
@@ -244,17 +220,7 @@ export default function Layout({ children }) {
               </nav>
 
               <div className="px-5 py-4 border-t border-slate-800 space-y-3">
-                <button
-                  onClick={toggleTheme}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-800 text-slate-200 text-sm font-semibold"
-                >
-                  <span className="flex items-center gap-2">
-                    {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-sky-400" />}
-                    {isDark ? 'Light Mode' : 'Dark Mode'}
-                  </span>
-                </button>
-
-                <button onClick={logout} className="flex items-center gap-2 text-rose-400 text-sm">
+                <button onClick={logout} className="flex items-center gap-2 text-rose-400 text-sm font-bold">
                   <LogOut size={16} /> Log out
                 </button>
               </div>
@@ -265,7 +231,7 @@ export default function Layout({ children }) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-[#090d16] transition-colors duration-200">
-        {/* Sleek Top Header Bar with Live Date & Time, Notifications, Theme Toggle, Admin Profile */}
+        {/* Sleek Top Header Bar */}
         <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-3 flex items-center justify-between shadow-sm transition-colors">
           {/* Mobile Drawer Button + Live Time Widget */}
           <div className="flex items-center gap-3">
@@ -287,14 +253,40 @@ export default function Layout({ children }) {
             </div>
           </div>
 
-          {/* Right Controls: Notifications + Theme Switcher + Admin Profile */}
-          <div className="flex items-center gap-3">
+          {/* Right Controls: Language Selector + Notifications Bell + ICON-ONLY Theme Toggle + Admin Profile */}
+          <div className="flex items-center gap-2.5">
+            {/* Language Selector Dropdown (English vs Telugu) */}
+            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => setLang('en')}
+                className={`px-2.5 py-1 rounded-lg text-[12px] font-extrabold transition-all ${
+                  lang === 'en'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="English Language"
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLang('te')}
+                className={`px-2.5 py-1 rounded-lg text-[12px] font-extrabold transition-all ${
+                  lang === 'te'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="తెలుగు భాష"
+              >
+                తెలుగు
+              </button>
+            </div>
+
             {/* Notification Bell Dropdown */}
             <div className="relative" ref={notifRef}>
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="relative p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-blue-400 transition-colors shadow-sm"
-                title="Operational Notifications"
+                className="relative p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-blue-400 transition-colors shadow-sm"
+                title="Notifications"
               >
                 <Bell size={18} />
                 {unreadCount > 0 && (
@@ -304,58 +296,40 @@ export default function Layout({ children }) {
                 )}
               </button>
 
-              {/* Notification Dropdown Drawer */}
               <AnimatePresence>
                 {notifOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-2 w-[350px] sm:w-[380px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden"
+                    className="absolute right-0 mt-2 w-[340px] sm:w-[370px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden"
                   >
                     <div className="bg-slate-900 dark:bg-slate-950 px-4 py-3 flex items-center justify-between text-white border-b border-slate-800">
                       <div className="flex items-center gap-2">
                         <Bell size={16} className="text-blue-400" />
                         <span className="font-display font-800 text-[15px]">Notifications</span>
-                        {unreadCount > 0 && (
-                          <span className="bg-blue-600 px-2 py-0.5 rounded-full font-mono text-[10.5px] font-bold">
-                            {unreadCount} new
-                          </span>
-                        )}
                       </div>
-                      {unreadCount > 0 && (
-                        <button onClick={markAllRead} className="text-[11.5px] text-blue-300 hover:text-white font-semibold transition-colors flex items-center gap-1">
-                          <Check size={13} /> Mark all read
-                        </button>
-                      )}
                     </div>
 
-                    <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[360px] overflow-y-auto">
+                    <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[340px] overflow-y-auto">
                       {notifications.map((n) => (
                         <div
                           key={n.id}
-                          onClick={() => handleNotificationClick(n)}
-                          className={`p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer flex items-start gap-3 ${
-                            n.unread ? 'bg-blue-50/50 dark:bg-slate-800/30' : ''
-                          }`}
+                          onClick={() => {
+                            setNotifOpen(false)
+                            if (n.to) navigate(n.to)
+                          }}
+                          className="p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer flex items-start gap-3"
                         >
-                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                            n.type === 'danger' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400' :
-                            n.type === 'warning' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400' :
-                            n.type === 'info' ? 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-400' :
-                            'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400'
-                          }`}>
-                            <AlertTriangle size={16} />
+                          <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                            <AlertTriangle size={15} />
                           </div>
-
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-1">
-                              <span className={`text-[13.5px] ${n.unread ? 'font-extrabold text-slate-950 dark:text-white' : 'font-bold text-slate-800 dark:text-slate-200'}`}>
-                                {n.title}
-                              </span>
-                              <span className="text-[10.5px] font-mono text-slate-600 dark:text-slate-400 shrink-0">{n.time}</span>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[13.5px] font-extrabold text-slate-950 dark:text-white">{n.title}</span>
+                              <span className="text-[10.5px] font-mono text-slate-500">{n.time}</span>
                             </div>
-                            <p className="text-[12.5px] text-slate-600 dark:text-slate-400 font-medium mt-0.5 leading-snug">{n.message}</p>
+                            <p className="text-[12.5px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">{n.message}</p>
                           </div>
                         </div>
                       ))}
@@ -365,18 +339,17 @@ export default function Layout({ children }) {
               </AnimatePresence>
             </div>
 
-            {/* Dark/Light Mode Theme Switcher */}
+            {/* ICON-ONLY Dark / Light Mode Switcher */}
             <button
               onClick={toggleTheme}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-blue-400 transition-colors text-[12.5px] font-bold shadow-sm"
+              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-blue-400 transition-colors shadow-sm"
               title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
             >
-              {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-sky-400" />}
-              <span className="hidden sm:inline">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+              {isDark ? <Sun size={18} className="text-amber-400 shrink-0" /> : <Moon size={18} className="text-sky-400 shrink-0" />}
             </button>
 
             {/* Admin Profile Pill */}
-            <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-2.5 pl-2.5 border-l border-slate-200 dark:border-slate-800">
               <div className="relative">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-800 text-xs flex items-center justify-center shadow-md shadow-blue-500/20">
                   {user?.name?.[0]?.toUpperCase() || 'A'}
@@ -384,14 +357,14 @@ export default function Layout({ children }) {
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
               </div>
 
-              <div className="hidden sm:block text-left">
-                <div className="font-bold text-slate-950 dark:text-white text-[13.5px] leading-tight">{user?.name || 'Admin'}</div>
-                <div className="text-[11px] text-blue-600 dark:text-sky-400 font-semibold capitalize">{user?.role || 'Administrator'}</div>
+              <div className="hidden lg:block text-left">
+                <div className="font-extrabold text-slate-950 dark:text-white text-[13.5px] leading-tight">{user?.name || 'Admin'}</div>
+                <div className="text-[11px] text-blue-600 dark:text-sky-400 font-bold capitalize">{user?.role || 'Administrator'}</div>
               </div>
 
               <button
                 onClick={logout}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ml-1"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 title="Logout"
               >
                 <LogOut size={16} />
