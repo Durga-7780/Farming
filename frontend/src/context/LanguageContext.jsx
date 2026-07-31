@@ -310,6 +310,15 @@ export const translations = {
     'Annapurna Rice Mill': 'Annapurna Rice Mill',
     'Royal Agro Processing Unit': 'Royal Agro Processing Unit',
     
+    // Notifications
+    notif_title: 'Notifications',
+    notif_1_title: 'Low Grain Stock Alert',
+    notif_1_msg: 'Paddy - MTU 1010 warehouse stock is running low (< 10%).',
+    notif_2_title: 'Mill Unload Pending',
+    notif_2_msg: 'Pass DISP-2026-0003 is in transit to Kakatiya Agro.',
+    notif_3_title: 'Pending Farmer Disbursal',
+    notif_3_msg: '₹8,89,515 payout balance outstanding across 200 farmers.',
+    
     // Purchases Page
     procurement_purchases: 'Procurement & Purchases',
     purchase_subtitle: '100 purchase vouchers recorded from farmers',
@@ -527,6 +536,15 @@ export const translations = {
     'S. Annapurna': 'ఎస్. అన్నపూర్ణ',
     'R. Royal Rao': 'ఆర్. రాయల్ రావు',
     
+    // Notifications (Telugu)
+    notif_title: 'నోటిఫికేషన్లు',
+    notif_1_title: 'లైవ్ ధాన్యం స్టాక్ హెచ్చరిక',
+    notif_1_msg: 'వేర్‌హౌస్‌లో వరి - MTU 1010 ధాన్యం నిల్వలు తక్కువగా ఉన్నాయి (< 10%).',
+    notif_2_title: 'మిల్లు అన్‌లోడ్ పెండింగ్',
+    notif_2_msg: 'రవాణా పాస్ DISP-2026-0003 కాకతీయ మిల్లుకు రవాణాలో ఉంది.',
+    notif_3_title: 'రైతు బకాయిల చెల్లింపు',
+    notif_3_msg: '200 మంది రైతులకు ₹8,89,515 చెల్లించాల్సిన బకాయి ఉంది.',
+
     // Purchases Page
     procurement_purchases: 'సేకరణ మరియు కొనుగోళ్లు',
     purchase_subtitle: 'రైతుల నుండి నమోదైన 100 కొనుగోలు వోచర్లు',

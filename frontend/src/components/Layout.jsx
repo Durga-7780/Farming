@@ -46,8 +46,8 @@ export default function Layout({ children }) {
   const notifications = [
     {
       id: 1,
-      title: t('isTelugu') ? 'లైవ్ ధాన్యం స్టాక్ హెచ్చరిక' : 'Low Grain Stock Alert',
-      message: 'Paddy - MTU 1010 warehouse stock is running low (< 10%).',
+      title: t('notif_1_title'),
+      message: t('notif_1_msg'),
       time: '10 min ago',
       type: 'danger',
       unread: true,
@@ -55,8 +55,8 @@ export default function Layout({ children }) {
     },
     {
       id: 2,
-      title: t('isTelugu') ? 'మిల్లు అన్‌లోడ్ పెండింగ్' : 'Mill Unload Pending',
-      message: 'Pass DISP-2026-0003 is in transit to Kakatiya Agro.',
+      title: t('notif_2_title'),
+      message: t('notif_2_msg'),
       time: '25 min ago',
       type: 'warning',
       unread: true,
@@ -64,8 +64,8 @@ export default function Layout({ children }) {
     },
     {
       id: 3,
-      title: t('isTelugu') ? 'రైతు బకాయిల చెల్లింపు' : 'Pending Farmer Disbursal',
-      message: '₹8,89,515 payout balance outstanding across 200 farmers.',
+      title: t('notif_3_title'),
+      message: t('notif_3_msg'),
       time: '1 hr ago',
       type: 'info',
       unread: true,
@@ -307,7 +307,7 @@ export default function Layout({ children }) {
                     <div className="bg-slate-900 dark:bg-slate-950 px-4 py-3 flex items-center justify-between text-white border-b border-slate-800">
                       <div className="flex items-center gap-2">
                         <Bell size={16} className="text-blue-400" />
-                        <span className="font-display font-800 text-[15px]">Notifications</span>
+                        <span className="font-display font-800 text-[15px]">{t('notif_title')}</span>
                       </div>
                     </div>
 
