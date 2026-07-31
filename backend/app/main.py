@@ -13,11 +13,12 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AgroLedger API", version="1.0.0")
 
-origins = os.getenv("CORS_ORIGINS", "http://144.91.88.232:2029").split(",")
+origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins if origins else ["*"],
+    allow_origin_regex=".*" if not origins else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

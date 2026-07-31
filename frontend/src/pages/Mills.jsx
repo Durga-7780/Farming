@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Plus, Search, Factory, Phone, Pencil, BookOpen } from 'lucide-react'
+import { Plus, Factory, Phone, Pencil, BookOpen, MapPin, Building, CreditCard } from 'lucide-react'
 import api from '../api/client'
 import Modal from '../components/Modal.jsx'
-import { Field, inputClass, Button, EmptyState, Badge } from '../components/ui.jsx'
+import DataTable from '../components/DataTable.jsx'
+import { Field, inputClass, Button, Badge } from '../components/ui.jsx'
 
 const emptyForm = { name: '', contact_person: '', mobile: '', gst_number: '', address: '', bank_account: '', bank_ifsc: '' }
+const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
 
 export default function Mills() {
   const [mills, setMills] = useState([])
-  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -19,16 +19,25 @@ export default function Mills() {
 
   async function load() {
     setLoading(true)
-    const { data } = await api.get('/api/mills', { params: { search: search || undefined } })
-    setMills(data)
-    setLoading(false)
+    try {
+      const { data } = await api.get('/api/mills')
+      setMills(data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
-  useEffect(() => { const t = setTimeout(load, 300); return () => clearTimeout(t) }, [search])
 
   function openCreate() { setEditing(null); setForm(emptyForm); setModalOpen(true) }
-  function openEdit(m) { setEditing(m); setForm({ ...emptyForm, ...m }); setModalOpen(true) }
+  function openEdit(m, e) {
+    if (e) e.stopPropagation()
+    setEditing(m)
+    setForm({ ...emptyForm, ...m })
+    setModalOpen(true)
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -38,104 +47,225 @@ export default function Mills() {
     load()
   }
 
-  async function openLedger(m) {
+  async function openLedger(m, e) {
+    if (e) e.stopPropagation()
     setLedgerMill(m)
-    const { data } = await api.get(`/api/mills/${m.id}/ledger`)
-    setLedgerData(data)
+    try {
+      const { data } = await api.get(`/api/mills/${m.id}/ledger`)
+      setLedgerData(data)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
-  return (
-    <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  const columns = [
+    {
+      key: 'code',
+      label: 'Mill Code',
+      sortable: true,
+      render: (val) => <span className="font-mono text-blue-700 dark:text-sky-400 font-extrabold">{val}</span>
+    },
+    {
+      key: 'name',
+      label: 'Rice Mill Name',
+      sortable: true,
+      render: (val, row) => (
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 font-bold flex items-center justify-center text-xs shrink-0">
+            <Building size={15} />
+          </div>
+          <div>
+            <div className="font-bold text-slate-950 dark:text-white text-[14px]">{val}</div>
+            {row.gst_number && <div className="text-[11.5px] font-mono text-slate-600 dark:text-slate-400">GST: {row.gst_number}</div>}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'contact_person',
+      label: 'Contact Person',
+      sortable: true,
+      render: (val) => <span className="text-slate-900 dark:text-slate-100 font-bold">{val || '—'}</span>
+    },
+    {
+      key: 'mobile',
+      label: 'Mobile',
+      sortable: true,
+      render: (val) => (
+        val ? (
+          <a href={`tel:${val}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1.5 font-mono text-slate-900 dark:text-slate-100 font-bold hover:text-blue-700 dark:hover:text-sky-400">
+            <Phone size={12} className="text-blue-600 dark:text-sky-400" /> {val}
+          </a>
+        ) : '—'
+      )
+    },
+    {
+      key: 'address',
+      label: 'Location Address',
+      sortable: true,
+      render: (val) => val ? <div className="text-[12.5px] text-slate-800 dark:text-slate-300 font-medium truncate max-w-xs">{val}</div> : '—'
+    },
+    {
+      key: 'bank_account',
+      label: 'Bank Account',
+      sortable: true,
+      render: (val, row) => (
+        val ? (
+          <div className="font-mono text-[12.5px] text-slate-900 dark:text-slate-100 font-bold">
+            <div>{val}</div>
+            {row.bank_ifsc && <div className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">IFSC: {row.bank_ifsc}</div>}
+          </div>
+        ) : '—'
+      )
+    },
+    {
+      key: 'is_active',
+      label: 'Status',
+      sortable: true,
+      align: 'center',
+      render: (val) => <Badge tone={val ? 'success' : 'default'} size="sm">{val ? 'Active' : 'Inactive'}</Badge>
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      align: 'right',
+      render: (_, row) => (
+        <div className="flex items-center justify-end gap-1.5">
+          <Button variant="ghost" size="sm" onClick={(e) => openEdit(row, e)}>
+            <Pencil size={13} />
+          </Button>
+          <Button variant="accent" size="sm" onClick={(e) => openLedger(row, e)}>
+            <BookOpen size={13} /> <span className="hidden lg:inline">Ledger</span>
+          </Button>
+        </div>
+      )
+    }
+  ]
+
+  // Rich Filter Fields for Mills Page
+  const filterFields = [
+    {
+      key: 'is_active',
+      label: 'Mill Active Status',
+      type: 'boolean'
+    },
+    {
+      key: 'contact_person',
+      label: 'Contact Person Name',
+      type: 'search',
+      placeholder: 'Search manager name...'
+    },
+    {
+      key: 'address',
+      label: 'Location / City Address',
+      type: 'search',
+      placeholder: 'Search city/mandal...'
+    },
+    {
+      key: 'gst_number',
+      label: 'GST Number Search',
+      type: 'search',
+      placeholder: 'Search GST #'
+    }
+  ]
+
+  const cardRender = (m) => (
+    <div
+      key={m.id}
+      onClick={() => openLedger(m)}
+      className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-blue-400 cursor-pointer space-y-3"
+    >
+      <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-display font-800 text-[22px] text-ink">Mills</h1>
-          <p className="text-muted text-[13.5px] mt-0.5">{mills.length} mill{mills.length !== 1 ? 's' : ''} on record</p>
+          <span className="font-mono text-blue-600 dark:text-sky-400 text-[13px] font-bold">{m.code}</span>
+          <h4 className="font-display font-700 text-[15px] text-slate-900 dark:text-white">{m.name}</h4>
         </div>
-        <Button variant="accent" onClick={openCreate}><Plus size={16} /> Add mill</Button>
+        <Badge tone={m.is_active ? 'success' : 'default'}>{m.is_active ? 'Active' : 'Inactive'}</Badge>
       </div>
-
-      <div className="relative max-w-sm">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, mobile, or code" className={`${inputClass} pl-9`} />
+      <div className="text-[13px] text-slate-700 dark:text-slate-300 space-y-1 py-2 border-y border-slate-100 dark:border-slate-800">
+        {m.contact_person && <div><span className="text-slate-500 dark:text-slate-400">Contact: </span><span className="font-semibold text-slate-900 dark:text-white">{m.contact_person}</span></div>}
+        {m.mobile && <div><span className="text-slate-500 dark:text-slate-400">Mobile: </span><span className="font-mono font-bold text-slate-900 dark:text-white">{m.mobile}</span></div>}
+        {m.address && <div><span className="text-slate-500 dark:text-slate-400">Address: </span><span>{m.address}</span></div>}
       </div>
+      <div className="flex gap-2 pt-1">
+        <Button variant="ghost" className="flex-1 !py-2 text-[12.5px]" onClick={(e) => openEdit(m, e)}>
+          <Pencil size={13} /> Edit
+        </Button>
+        <Button variant="accent" className="flex-1 !py-2 text-[12.5px]" onClick={(e) => openLedger(m, e)}>
+          <BookOpen size={13} /> Ledger
+        </Button>
+      </div>
+    </div>
+  )
 
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => <div key={i} className="h-32 bg-surface rounded-card animate-pulse border border-line/60" />)}
-        </div>
-      ) : mills.length === 0 ? (
-        <div className="bg-surface rounded-card border border-line/60">
-          <EmptyState icon={Factory} title="No mills yet" subtitle="Add a mill to start recording sales." action={<Button variant="accent" onClick={openCreate}><Plus size={15} /> Add mill</Button>} />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mills.map((m, i) => (
-            <motion.div key={m.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.3) }} className="bg-surface rounded-card shadow-card border border-line/60 p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h4 className="font-display font-700 text-[15px] text-ink">{m.name}</h4>
-                  <span className="text-[11px] font-mono text-muted">{m.code}</span>
-                </div>
-                <Badge tone={m.is_active ? 'success' : 'default'}>{m.is_active ? 'active' : 'inactive'}</Badge>
-              </div>
-              <div className="space-y-1 mb-3">
-                {m.contact_person && <div className="text-[12.5px] text-muted">{m.contact_person}</div>}
-                {m.mobile && <div className="flex items-center gap-1.5 text-[12.5px] text-muted"><Phone size={12} /> {m.mobile}</div>}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" className="flex-1 !py-2 text-[12.5px]" onClick={() => openEdit(m)}><Pencil size={13} /> Edit</Button>
-                <Button variant="ghost" className="flex-1 !py-2 text-[12.5px]" onClick={() => openLedger(m)}><BookOpen size={13} /> Ledger</Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
+  return (
+    <div>
+      <DataTable
+        title="Rice Mill Partners Directory"
+        subtitle={`${mills.length} processing and storage mills associated`}
+        columns={columns}
+        data={mills}
+        searchKeys={['name', 'code', 'contact_person', 'mobile', 'gst_number', 'address']}
+        filterFields={filterFields}
+        defaultSortKey="code"
+        defaultSortOrder="asc"
+        onRowClick={(m) => openLedger(m)}
+        cardRender={cardRender}
+        action={
+          <Button variant="primary" onClick={openCreate}>
+            <Plus size={16} /> Register New Mill
+          </Button>
+        }
+      />
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit mill' : 'Add mill'} wide>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Mill name" className="sm:col-span-2">
-            <input required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+      {/* Add / Edit Mill Modal */}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Rice Mill' : 'Register New Rice Mill'} wide>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-900 dark:text-slate-100">
+          <Field label="Rice Mill Name *" className="sm:col-span-2">
+            <input required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Sri Lakshmi Venkateswara Rice Mill" />
           </Field>
-          <Field label="Contact person">
-            <input className={inputClass} value={form.contact_person} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} />
+          <Field label="Contact Person Name">
+            <input className={inputClass} value={form.contact_person} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} placeholder="Manager / Owner Name" />
           </Field>
-          <Field label="Mobile number">
-            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} />
+          <Field label="Mobile Number">
+            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} placeholder="9848012345" />
           </Field>
-          <Field label="GST number">
-            <input className={inputClass} value={form.gst_number} onChange={(e) => setForm({ ...form, gst_number: e.target.value })} />
+          <Field label="GST Registration Number">
+            <input className={inputClass} value={form.gst_number} onChange={(e) => setForm({ ...form, gst_number: e.target.value })} placeholder="e.g. 37AAAAA0000A1Z5" />
           </Field>
-          <Field label="Address" className="sm:col-span-2">
-            <input className={inputClass} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+          <Field label="Location Address" className="sm:col-span-2">
+            <input className={inputClass} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Industrial Area, Tenali, AP" />
           </Field>
-          <Field label="Bank account number">
-            <input className={inputClass} value={form.bank_account} onChange={(e) => setForm({ ...form, bank_account: e.target.value })} />
+          <Field label="Bank Account Number">
+            <input className={inputClass} value={form.bank_account} onChange={(e) => setForm({ ...form, bank_account: e.target.value })} placeholder="Bank Account Number" />
           </Field>
-          <Field label="IFSC">
-            <input className={inputClass} value={form.bank_ifsc} onChange={(e) => setForm({ ...form, bank_ifsc: e.target.value })} />
+          <Field label="IFSC Code">
+            <input className={inputClass} value={form.bank_ifsc} onChange={(e) => setForm({ ...form, bank_ifsc: e.target.value })} placeholder="SBIN0001423" />
           </Field>
-          <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
+          <div className="sm:col-span-2 flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
             <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="accent">{editing ? 'Save changes' : 'Add mill'}</Button>
+            <Button type="submit" variant="primary">{editing ? 'Save Changes' : 'Register Mill'}</Button>
           </div>
         </form>
       </Modal>
 
-      <Modal open={!!ledgerMill} onClose={() => setLedgerMill(null)} title={`Ledger · ${ledgerMill?.name || ''}`} wide>
+      {/* Mill Ledger Modal */}
+      <Modal open={!!ledgerMill} onClose={() => setLedgerMill(null)} title={`Mill Financial Ledger · ${ledgerMill?.name || ''}`} wide>
         {ledgerData && (
-          <div className="space-y-4">
+          <div className="space-y-4 text-slate-900 dark:text-slate-100">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-surfacealt rounded-lg p-3">
-                <div className="text-[11px] text-muted">Sold</div>
-                <div className="font-mono text-[15px] font-semibold">₹{ledgerData.total_sale_value.toLocaleString('en-IN')}</div>
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="text-[12px] text-slate-600 dark:text-slate-400 font-semibold">Total Dispatch Sales</div>
+                <div className="font-mono text-[18px] font-extrabold text-blue-700 dark:text-sky-400 mt-1">₹{ledgerData.total_sale_value.toLocaleString('en-IN')}</div>
               </div>
-              <div className="bg-surfacealt rounded-lg p-3">
-                <div className="text-[11px] text-muted">Collected</div>
-                <div className="font-mono text-[15px] font-semibold">₹{ledgerData.total_collected.toLocaleString('en-IN')}</div>
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="text-[12px] text-slate-600 dark:text-slate-400 font-semibold">Total Collected</div>
+                <div className="font-mono text-[18px] font-extrabold text-emerald-700 dark:text-emerald-400 mt-1">₹{ledgerData.total_collected.toLocaleString('en-IN')}</div>
               </div>
-              <div className="bg-danger/10 rounded-lg p-3">
-                <div className="text-[11px] text-danger">Outstanding</div>
-                <div className="font-mono text-[15px] font-semibold text-danger">₹{ledgerData.outstanding.toLocaleString('en-IN')}</div>
+              <div className="bg-rose-50 dark:bg-rose-950/40 p-4 rounded-xl border border-rose-200 dark:border-rose-900">
+                <div className="text-[12px] text-rose-700 dark:text-rose-400 font-semibold">Outstanding Receivable</div>
+                <div className="font-mono text-[18px] font-extrabold text-rose-700 dark:text-rose-400 mt-1">₹{ledgerData.outstanding.toLocaleString('en-IN')}</div>
               </div>
             </div>
           </div>

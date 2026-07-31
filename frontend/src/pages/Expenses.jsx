@@ -1,43 +1,35 @@
 import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Plus, Receipt, Edit2, Trash2, Filter, PieChart as PieChartIcon } from 'lucide-react'
+import { Plus, Receipt, Edit2, Trash2, PieChart as PieChartIcon } from 'lucide-react'
 import api from '../api/client'
 import Modal from '../components/Modal.jsx'
-import { Field, inputClass, Button, EmptyState, Badge } from '../components/ui.jsx'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import DataTable from '../components/DataTable.jsx'
+import { Field, inputClass, Button, Badge } from '../components/ui.jsx'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 const CATEGORIES = ['Transport', 'Labour', 'Fuel', 'Office', 'Miscellaneous']
-const MONTHS = [
-  { val: 'All', label: 'All Months' },
-  { val: '1', label: 'January' }, { val: '2', label: 'February' },
-  { val: '3', label: 'March' }, { val: '4', label: 'April' },
-  { val: '5', label: 'May' }, { val: '6', label: 'June' },
-  { val: '7', label: 'July' }, { val: '8', label: 'August' },
-  { val: '9', label: 'September' }, { val: '10', label: 'October' },
-  { val: '11', label: 'November' }, { val: '12', label: 'December' }
-]
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6']
+const COLORS = ['#2563eb', '#4f46e5', '#10b981', '#f59e0b', '#e11d48']
+const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState([])
   const [loading, setLoading] = useState(true)
-  
+
   const [modalOpen, setModalOpen] = useState(false)
   const [form, setForm] = useState({ category: 'Transport', amount: '', description: '' })
-  
+
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editForm, setEditForm] = useState(null)
 
-  // Filters
-  const [filterMonth, setFilterMonth] = useState('All')
-  const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString())
-  const [filterCategory, setFilterCategory] = useState('All')
-
   async function load() {
     setLoading(true)
-    const { data } = await api.get('/api/expenses')
-    setExpenses(data)
-    setLoading(false)
+    try {
+      const { data } = await api.get('/api/expenses')
+      setExpenses(data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -51,7 +43,8 @@ export default function Expenses() {
     load()
   }
 
-  function openEdit(exp) {
+  function openEdit(exp, e) {
+    if (e) e.stopPropagation()
     setEditForm({ ...exp })
     setEditModalOpen(true)
   }
@@ -67,204 +60,166 @@ export default function Expenses() {
     load()
   }
 
-  async function handleDelete(id) {
-    if (window.confirm("Are you sure you want to delete this expense?")) {
+  async function handleDelete(id, e) {
+    if (e) e.stopPropagation()
+    if (window.confirm("Are you sure you want to delete this expense entry?")) {
       await api.delete(`/api/expenses/${id}`)
       load()
     }
   }
 
-  // Filtered data
-  const filteredExpenses = expenses.filter(e => {
-    const d = new Date(e.expense_date)
-    const m = (d.getMonth() + 1).toString()
-    const y = d.getFullYear().toString()
-    
-    if (filterYear !== 'All' && y !== filterYear) return false
-    if (filterMonth !== 'All' && m !== filterMonth) return false
-    if (filterCategory !== 'All' && e.category !== filterCategory) return false
-    return true
-  })
+  const categoryData = CATEGORIES.map((c) => ({
+    name: c,
+    value: expenses.filter((e) => e.category === c).reduce((sum, e) => sum + e.amount, 0)
+  })).filter((c) => c.value > 0)
 
-  const total = filteredExpenses.reduce((sum, e) => sum + e.amount, 0)
-
-  // Graph Data
-  const categoryData = CATEGORIES.map(c => {
-    return {
-      name: c,
-      value: filteredExpenses.filter(e => e.category === c).reduce((sum, e) => sum + e.amount, 0)
+  const columns = [
+    {
+      key: 'category',
+      label: 'Expense Category',
+      sortable: true,
+      render: (val) => <Badge tone="info" size="sm">{val}</Badge>
+    },
+    {
+      key: 'description',
+      label: 'Description / Notes',
+      sortable: true,
+      render: (val) => <span className="text-slate-900 font-bold">{val || '—'}</span>
+    },
+    {
+      key: 'amount',
+      label: 'Amount (₹)',
+      sortable: true,
+      align: 'right',
+      render: (val) => <span className="font-mono text-rose-700 font-extrabold text-[14px]">{fmt(val)}</span>
+    },
+    {
+      key: 'expense_date',
+      label: 'Expense Date',
+      sortable: true,
+      render: (val) => <span className="text-slate-700 text-[12.5px] font-medium">{new Date(val).toLocaleDateString('en-IN')}</span>
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      align: 'right',
+      render: (_, row) => (
+        <div className="flex items-center justify-end gap-2 text-slate-600">
+          <button onClick={(e) => openEdit(row, e)} className="p-1.5 rounded-lg hover:bg-slate-100 hover:text-blue-700 transition-colors" title="Edit">
+            <Edit2 size={14} />
+          </button>
+          <button onClick={(e) => handleDelete(row.id, e)} className="p-1.5 rounded-lg hover:bg-slate-100 hover:text-rose-600 transition-colors" title="Delete">
+            <Trash2 size={14} />
+          </button>
+        </div>
+      )
     }
-  }).filter(c => c.value > 0)
+  ]
 
-  // Available years for dropdown
-  const years = Array.from(new Set(expenses.map(e => new Date(e.expense_date).getFullYear().toString()))).sort((a,b) => b.localeCompare(a))
-  if (!years.includes(new Date().getFullYear().toString())) years.unshift(new Date().getFullYear().toString())
+  const filterFields = [
+    {
+      key: 'category',
+      label: 'Expense Category',
+      type: 'select',
+      options: CATEGORIES
+    }
+  ]
+
+  const cardRender = (e) => (
+    <div key={e.id} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+      <div className="flex items-start justify-between">
+        <Badge tone="info">{e.category}</Badge>
+        <span className="font-mono text-rose-700 font-extrabold text-[15px]">{fmt(e.amount)}</span>
+      </div>
+      <p className="text-[13px] text-slate-900 font-semibold">{e.description || 'No description provided'}</p>
+      <div className="flex items-center justify-between text-[12px] text-slate-600 font-medium pt-2 border-t border-slate-100">
+        <span>{new Date(e.expense_date).toLocaleDateString('en-IN')}</span>
+        <div className="flex items-center gap-2">
+          <button onClick={(ev) => openEdit(e, ev)} className="hover:text-blue-700"><Edit2 size={14} /></button>
+          <button onClick={(ev) => handleDelete(e.id, ev)} className="hover:text-rose-600"><Trash2 size={14} /></button>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display font-800 text-[22px] text-ink">Expenses</h1>
-          <p className="text-muted text-[13.5px] mt-0.5">Track and analyze your spending.</p>
-        </div>
-        <Button variant="accent" onClick={openCreate}><Plus size={16} /> Add expense</Button>
-      </div>
-
-      {/* Reports & Filters Section */}
-      <div className="bg-surface rounded-card shadow-card border border-line/60 p-5">
-        <div className="flex flex-col md:flex-row gap-6">
-          
-          {/* Filters Sidebar */}
-          <div className="w-full md:w-64 shrink-0 space-y-4">
-            <h3 className="flex items-center gap-2 font-semibold text-[14px] text-ink">
-              <Filter size={16} className="text-primary" /> Filters
-            </h3>
-            
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[11.5px] font-medium text-muted mb-1">Year</label>
-                <select className={inputClass} value={filterYear} onChange={e => setFilterYear(e.target.value)}>
-                  <option value="All">All Years</option>
-                  {years.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-[11.5px] font-medium text-muted mb-1">Month</label>
-                <select className={inputClass} value={filterMonth} onChange={e => setFilterMonth(e.target.value)}>
-                  {MONTHS.map(m => <option key={m.val} value={m.val}>{m.label}</option>)}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[11.5px] font-medium text-muted mb-1">Category</label>
-                <select className={inputClass} value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
-                  <option value="All">All Categories</option>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-line/40 mt-4">
-              <div className="text-[12px] text-muted">Filtered Total</div>
-              <div className="font-mono text-xl font-bold text-ink">₹{total.toLocaleString('en-IN')}</div>
-            </div>
+      {/* Category Breakdown Graph */}
+      {categoryData.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <h3 className="flex items-center gap-2 font-display font-700 text-[15px] text-slate-900 mb-2">
+            <PieChartIcon size={17} className="text-blue-600" /> Operational Expense Distribution
+          </h3>
+          <div className="h-[200px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={75}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value) => `₹${value.toLocaleString('en-IN')}`}
+                  contentStyle={{ backgroundColor: '#ffffff', borderColor: '#cbd5e1', borderRadius: '12px', color: '#0f172a' }}
+                />
+                <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#475569' }} />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-
-          {/* Graph Area */}
-          <div className="flex-1 flex flex-col md:border-l md:border-line/40 md:pl-6 min-h-[250px]">
-             <h3 className="flex items-center gap-2 font-semibold text-[14px] text-ink mb-4">
-              <PieChartIcon size={16} className="text-primary" /> Expense Breakdown
-            </h3>
-            
-            {categoryData.length > 0 ? (
-              <div className="flex-1 flex items-center justify-center -ml-4">
-                <ResponsiveContainer width="100%" height={220}>
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value) => `₹${value.toLocaleString('en-IN')}`}
-                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                    />
-                    <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-[13px] text-muted bg-surfacealt/50 rounded-lg border border-dashed border-line">
-                No expenses found for these filters.
-              </div>
-            )}
-          </div>
-
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="space-y-2">{[...Array(4)].map((_, i) => <div key={i} className="h-12 bg-surface rounded-lg animate-pulse border border-line/60" />)}</div>
-      ) : expenses.length === 0 ? (
-        <div className="bg-surface rounded-card border border-line/60">
-          <EmptyState icon={Receipt} title="No expenses logged" subtitle="Track transport, labour, and other operational costs here." action={<Button variant="accent" onClick={openCreate}><Plus size={15} /> Add expense</Button>} />
-        </div>
-      ) : (
-        <div className="bg-surface rounded-card border border-line/60 overflow-x-auto shadow-card">
-          <table className="w-full text-[13px]">
-            <thead>
-              <tr className="text-left text-muted border-b border-line/60 bg-surfacealt/30">
-                <th className="px-4 py-3 font-medium">Category</th>
-                <th className="px-4 py-3 font-medium">Description</th>
-                <th className="px-4 py-3 font-medium text-right">Amount</th>
-                <th className="px-4 py-3 font-medium">Date</th>
-                <th className="px-4 py-3 font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredExpenses.length > 0 ? filteredExpenses.map((e) => (
-                <motion.tr key={e.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-b border-line/40 last:border-0 hover:bg-surfacealt/10 transition-colors">
-                  <td className="px-4 py-3"><Badge tone="info">{e.category}</Badge></td>
-                  <td className="px-4 py-3 text-muted">{e.description || '—'}</td>
-                  <td className="px-4 py-3 text-right font-mono font-semibold">₹{e.amount.toLocaleString('en-IN')}</td>
-                  <td className="px-4 py-3 text-muted">{new Date(e.expense_date).toLocaleDateString('en-IN')}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-3 text-muted">
-                      <button onClick={() => openEdit(e)} className="hover:text-primary transition-colors" title="Edit">
-                        <Edit2 size={15} />
-                      </button>
-                      <button onClick={() => handleDelete(e.id)} className="hover:text-danger transition-colors" title="Delete">
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
-              )) : (
-                <tr>
-                  <td colSpan="5" className="px-4 py-8 text-center text-[13px] text-muted">
-                    No matching expenses for the selected filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
         </div>
       )}
 
+      <DataTable
+        title="Operational Expenses Log"
+        subtitle={`${expenses.length} transport, labour, and office cost records`}
+        columns={columns}
+        data={expenses}
+        searchKeys={['category', 'description']}
+        filterFields={filterFields}
+        defaultSortKey="expense_date"
+        defaultSortOrder="desc"
+        cardRender={cardRender}
+        action={
+          <Button variant="primary" onClick={openCreate}>
+            <Plus size={16} /> Log New Expense
+          </Button>
+        }
+      />
+
       {/* Create Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Add expense">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Field label="Category">
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Log Operational Expense">
+        <form onSubmit={handleSubmit} className="space-y-4 text-slate-900">
+          <Field label="Category *">
             <select className={inputClass} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </Field>
-          <Field label="Amount (₹)">
-            <input required type="number" step="0.01" className={inputClass} value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
+          <Field label="Expense Amount (₹) *">
+            <input required type="number" step="0.01" className={inputClass} value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} placeholder="0.00" />
           </Field>
-          <Field label="Description">
-            <input className={inputClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <Field label="Description / Reason">
+            <input className={inputClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="e.g. Lorry diesel, labour charges" />
           </Field>
-          <div className="flex justify-end gap-2 pt-1">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
             <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="accent">Save expense</Button>
+            <Button type="submit" variant="primary">Save Expense Log</Button>
           </div>
         </form>
       </Modal>
 
       {/* Edit Modal */}
       {editForm && (
-        <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title="Edit expense">
-          <form onSubmit={handleEditSubmit} className="space-y-4">
+        <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title="Edit Expense Entry">
+          <form onSubmit={handleEditSubmit} className="space-y-4 text-slate-900">
             <Field label="Category">
               <select className={inputClass} value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -276,9 +231,9 @@ export default function Expenses() {
             <Field label="Description">
               <input className={inputClass} value={editForm.description || ''} onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} />
             </Field>
-            <div className="flex justify-end gap-2 pt-1">
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <Button type="button" variant="ghost" onClick={() => setEditModalOpen(false)}>Cancel</Button>
-              <Button type="submit" variant="accent">Save changes</Button>
+              <Button type="submit" variant="primary">Save Changes</Button>
             </div>
           </form>
         </Modal>

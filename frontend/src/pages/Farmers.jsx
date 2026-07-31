@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Plus, Search, Users, Phone, MapPin, Pencil, BookOpen, Wheat, X } from 'lucide-react'
+import { Plus, Users, Phone, MapPin, Pencil, BookOpen, Wheat, X, CheckCircle, Shield } from 'lucide-react'
 import api from '../api/client'
 import Modal from '../components/Modal.jsx'
-import { Field, inputClass, Button, EmptyState, Badge } from '../components/ui.jsx'
+import DataTable from '../components/DataTable.jsx'
+import { Field, inputClass, Button, Badge } from '../components/ui.jsx'
+
+const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
 
 const emptyForm = {
   name: '', aadhar: '', mobile: '', produce_variety_id: '', no_of_bags: '',
-  total_weight: '', mc_reading: '', cost: '', place: ''
+  total_weight: '', mc_reading: '', cost: '', place: '', village: '', mandal: '', district: ''
 }
 
 export default function Farmers() {
   const [farmers, setFarmers] = useState([])
-  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -25,18 +26,29 @@ export default function Farmers() {
 
   async function load() {
     setLoading(true)
-    const { data } = await api.get('/api/farmers', { params: { search: search || undefined } })
-    setFarmers(data)
-    setLoading(false)
+    try {
+      const { data } = await api.get('/api/farmers')
+      setFarmers(data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function loadVarieties() {
-    const { data } = await api.get('/api/produce-varieties')
-    setVarieties(data.filter(v => v.is_active))
+    try {
+      const { data } = await api.get('/api/produce-varieties')
+      setVarieties(data.filter((v) => v.is_active))
+    } catch (err) {
+      console.error(err)
+    }
   }
 
-  useEffect(() => { load(); loadVarieties() }, [])
-  useEffect(() => { const t = setTimeout(load, 300); return () => clearTimeout(t) }, [search])
+  useEffect(() => {
+    load()
+    loadVarieties()
+  }, [])
 
   function openCreate() {
     setEditing(null)
@@ -44,7 +56,8 @@ export default function Farmers() {
     setModalOpen(true)
   }
 
-  function openEdit(f) {
+  function openEdit(f, e) {
+    if (e) e.stopPropagation()
     setEditing(f)
     setForm({
       name: f.name || '',
@@ -55,7 +68,10 @@ export default function Farmers() {
       total_weight: f.total_weight || '',
       mc_reading: f.mc_reading || '',
       cost: f.cost || '',
-      place: f.place || ''
+      place: f.place || '',
+      village: f.village || '',
+      mandal: f.mandal || '',
+      district: f.district || ''
     })
     setModalOpen(true)
   }
@@ -88,117 +104,293 @@ export default function Farmers() {
     setShowNewVariety(false)
   }
 
-  async function openLedger(f) {
+  async function openLedger(f, e) {
+    if (e) e.stopPropagation()
     setLedgerFarmer(f)
-    const { data } = await api.get(`/api/farmers/${f.id}/ledger`)
-    setLedgerData(data)
+    try {
+      const { data } = await api.get(`/api/farmers/${f.id}/ledger`)
+      setLedgerData(data)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
-  return (
-    <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  const varietyOptions = Array.from(new Set(farmers.map((f) => f.produce_variety_name).filter(Boolean)))
+  const districtOptions = Array.from(new Set(farmers.map((f) => f.district).filter(Boolean)))
+
+  const columns = [
+    {
+      key: 'code',
+      label: 'Code',
+      sortable: true,
+      render: (val) => <span className="font-mono text-blue-700 dark:text-sky-400 font-extrabold">{val || '—'}</span>
+    },
+    {
+      key: 'name',
+      label: 'Farmer Name',
+      sortable: true,
+      render: (val, row) => (
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-sky-400 font-bold flex items-center justify-center text-xs shrink-0">
+            {val?.[0] || 'F'}
+          </div>
+          <div>
+            <div className="font-bold text-slate-950 dark:text-white text-[14px]">{val}</div>
+            {row.aadhar && <div className="text-[11.5px] text-slate-600 dark:text-slate-400 font-mono">Aadhaar: {row.aadhar}</div>}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'mobile',
+      label: 'Contact',
+      sortable: true,
+      render: (val) => (
+        val ? (
+          <a href={`tel:${val}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-100 hover:text-blue-700 dark:hover:text-sky-400 transition-colors font-mono">
+            <Phone size={13} className="text-blue-600 dark:text-sky-400" />
+            <span>{val}</span>
+          </a>
+        ) : <span className="text-slate-400">—</span>
+      )
+    },
+    {
+      key: 'location',
+      label: 'Location / Address',
+      sortable: true,
+      render: (_, row) => (
+        <div className="text-[12.5px] text-slate-800 dark:text-slate-200">
+          <div className="font-bold text-slate-900 dark:text-white">{row.village || row.place || '—'}</div>
+          {(row.mandal || row.district) && (
+            <div className="text-slate-600 dark:text-slate-400 text-[11.5px] font-medium flex items-center gap-1 mt-0.5">
+              <MapPin size={11} className="text-slate-500 dark:text-slate-400" />
+              <span>{[row.mandal, row.district].filter(Boolean).join(', ')}</span>
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'produce_variety_name',
+      label: 'Produce Variety',
+      sortable: true,
+      render: (val) => (
+        val ? (
+          <Badge tone="info" size="sm">
+            <Wheat size={11} /> {val}
+          </Badge>
+        ) : <span className="text-slate-400">—</span>
+      )
+    },
+    {
+      key: 'no_of_bags',
+      label: 'Bags',
+      sortable: true,
+      align: 'right',
+      render: (val) => <span className="font-mono text-slate-900 dark:text-white font-extrabold">{val ? val.toLocaleString() : '0'}</span>
+    },
+    {
+      key: 'total_weight',
+      label: 'Weight (qtl)',
+      sortable: true,
+      align: 'right',
+      render: (val) => <span className="font-mono text-emerald-700 dark:text-emerald-400 font-extrabold">{val ? val.toFixed(2) : '0.00'}</span>
+    },
+    {
+      key: 'mc_reading',
+      label: 'Moisture (MC)',
+      sortable: true,
+      align: 'right',
+      render: (val) => (
+        val ? (
+          <span className={`font-mono text-[12px] font-bold px-2 py-0.5 rounded ${val > 16 ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-400 border border-amber-300 dark:border-amber-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700'}`}>
+            {val}%
+          </span>
+        ) : <span className="text-slate-400">—</span>
+      )
+    },
+    {
+      key: 'cost',
+      label: 'Total Cost',
+      sortable: true,
+      align: 'right',
+      render: (val) => <span className="font-mono text-blue-700 dark:text-sky-400 font-extrabold text-[14px]">{fmt(val)}</span>
+    },
+    {
+      key: 'is_active',
+      label: 'Status',
+      sortable: true,
+      align: 'center',
+      render: (val) => (
+        <Badge tone={val ? 'success' : 'default'} size="sm">
+          {val ? 'Active' : 'Inactive'}
+        </Badge>
+      )
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      align: 'right',
+      render: (_, row) => (
+        <div className="flex items-center justify-end gap-1.5">
+          <Button variant="ghost" size="sm" onClick={(e) => openEdit(row, e)} title="Edit Farmer">
+            <Pencil size={13} />
+          </Button>
+          <Button variant="accent" size="sm" onClick={(e) => openLedger(row, e)} title="View Ledger">
+            <BookOpen size={13} /> <span className="hidden lg:inline">Ledger</span>
+          </Button>
+        </div>
+      )
+    }
+  ]
+
+  // Expanded Rich Filters
+  const filterFields = [
+    {
+      key: 'produce_variety_name',
+      label: 'Produce Variety',
+      type: 'select',
+      options: varietyOptions
+    },
+    {
+      key: 'district',
+      label: 'District',
+      type: 'select',
+      options: districtOptions
+    },
+    {
+      key: 'mandal',
+      label: 'Mandal Search',
+      type: 'search'
+    },
+    {
+      key: 'village',
+      label: 'Village / Town',
+      type: 'search'
+    },
+    {
+      key: 'is_active',
+      label: 'Active Status',
+      type: 'boolean'
+    },
+    {
+      key: 'no_of_bags',
+      label: 'Min Bags',
+      type: 'min',
+      placeholder: 'Min bags count'
+    },
+    {
+      key: 'total_weight',
+      label: 'Min Weight (qtl)',
+      type: 'min',
+      placeholder: 'Min weight'
+    },
+    {
+      key: 'cost',
+      label: 'Min Cost (₹)',
+      type: 'min',
+      placeholder: 'Min cost'
+    }
+  ]
+
+  const cardRender = (f) => (
+    <div
+      key={f.id}
+      onClick={() => openLedger(f)}
+      className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-blue-400 cursor-pointer space-y-3"
+    >
+      <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-display font-800 text-[22px] text-ink">Farmers</h1>
-          <p className="text-muted text-[13.5px] mt-0.5">{farmers.length} farmer{farmers.length !== 1 ? 's' : ''} on record</p>
+          <h4 className="font-display font-700 text-[16px] text-slate-900 dark:text-white">{f.name}</h4>
+          <span className="text-[12px] font-mono text-blue-600 dark:text-sky-400 font-bold">{f.code}</span>
         </div>
-        <Button variant="accent" onClick={openCreate}><Plus size={16} /> Add farmer</Button>
+        <Badge tone={f.is_active ? 'success' : 'default'}>{f.is_active ? 'Active' : 'Inactive'}</Badge>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name, mobile, or code"
-          className={`${inputClass} pl-9`}
-        />
+      <div className="space-y-1.5 text-[13px] text-slate-700 dark:text-slate-300 border-y border-slate-100 dark:border-slate-800 py-2.5">
+        {f.mobile && (
+          <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-semibold">
+            <Phone size={14} className="text-blue-600 dark:text-sky-400" /> {f.mobile}
+          </div>
+        )}
+        {(f.village || f.district) && (
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+            <MapPin size={14} className="text-indigo-600 dark:text-indigo-400" /> {[f.village, f.district].filter(Boolean).join(', ')}
+          </div>
+        )}
+        {f.produce_variety_name && (
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+            <Wheat size={14} className="text-amber-600 dark:text-amber-400" /> {f.produce_variety_name}
+          </div>
+        )}
       </div>
 
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-32 bg-surface rounded-card animate-pulse border border-line/60" />
-          ))}
+      <div className="flex items-center justify-between text-[12.5px]">
+        <div>
+          <span className="text-slate-500 dark:text-slate-400">Total Bags: </span>
+          <span className="font-mono text-slate-900 dark:text-white font-bold">{f.no_of_bags || 0}</span>
         </div>
-      ) : farmers.length === 0 ? (
-        <div className="bg-surface rounded-card border border-line/60">
-          <EmptyState
-            icon={Users}
-            title="No farmers yet"
-            subtitle="Add your first farmer to start recording purchases against them."
-            action={<Button variant="accent" onClick={openCreate}><Plus size={15} /> Add farmer</Button>}
-          />
+        <div>
+          <span className="text-slate-500 dark:text-slate-400">Value: </span>
+          <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{fmt(f.cost)}</span>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {farmers.map((f, i) => (
-            <motion.div
-              key={f.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.03, 0.3) }}
-              className="bg-surface rounded-card shadow-card border border-line/60 p-4"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h4 className="font-display font-700 text-[15px] text-ink">{f.name}</h4>
-                  <span className="text-[11px] font-mono text-muted">{f.code}</span>
-                </div>
-                <Badge tone={f.is_active ? 'success' : 'default'}>{f.is_active ? 'active' : 'inactive'}</Badge>
-              </div>
-              <div className="space-y-1 mb-3">
-                {f.mobile && (
-                  <div className="flex items-center gap-1.5 text-[12.5px] text-muted"><Phone size={12} /> {f.mobile}</div>
-                )}
-                {f.place && (
-                  <div className="flex items-center gap-1.5 text-[12.5px] text-muted"><MapPin size={12} /> {f.place}</div>
-                )}
-                {f.produce_variety_name && (
-                  <div className="flex items-center gap-1.5 text-[12.5px] text-muted"><Wheat size={12} /> {f.produce_variety_name}</div>
-                )}
-                {(f.no_of_bags > 0 || f.total_weight > 0) && (
-                  <div className="flex items-center gap-3 text-[12.5px] text-muted">
-                    {f.no_of_bags > 0 && <span>{f.no_of_bags} bags</span>}
-                    {f.total_weight > 0 && <span>{f.total_weight} kg</span>}
-                    {f.mc_reading > 0 && <span>MC: {f.mc_reading}</span>}
-                    {f.cost > 0 && <span>₹{f.cost}</span>}
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" className="flex-1 !py-2 text-[12.5px]" onClick={() => openEdit(f)}>
-                  <Pencil size={13} /> Edit
-                </Button>
-                <Button variant="ghost" className="flex-1 !py-2 text-[12.5px]" onClick={() => openLedger(f)}>
-                  <BookOpen size={13} /> Ledger
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
+      </div>
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit farmer' : 'Add farmer'} wide>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Farmer name" className="sm:col-span-2">
-            <input required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+      <div className="flex gap-2 pt-1">
+        <Button variant="ghost" className="flex-1 !py-2 text-[12.5px]" onClick={(e) => openEdit(f, e)}>
+          <Pencil size={13} /> Edit
+        </Button>
+        <Button variant="accent" className="flex-1 !py-2 text-[12.5px]" onClick={(e) => openLedger(f, e)}>
+          <BookOpen size={13} /> Ledger
+        </Button>
+      </div>
+    </div>
+  )
+
+  return (
+    <div>
+      <DataTable
+        title="Farmer Directory & Ledger"
+        subtitle={`${farmers.length} active registered farmers across districts`}
+        columns={columns}
+        data={farmers}
+        searchKeys={['name', 'code', 'mobile', 'aadhar', 'village', 'mandal', 'district', 'produce_variety_name']}
+        filterFields={filterFields}
+        defaultSortKey="code"
+        defaultSortOrder="asc"
+        onRowClick={(farmer) => openLedger(farmer)}
+        cardRender={cardRender}
+        action={
+          <Button variant="primary" onClick={openCreate}>
+            <Plus size={16} /> Add Farmer
+          </Button>
+        }
+      />
+
+      {/* Add / Edit Farmer Modal */}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Farmer Details' : 'Register New Farmer'} wide>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-900 dark:text-slate-100">
+          <Field label="Farmer Full Name *" className="sm:col-span-2">
+            <input required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Venkateswara Rao" />
           </Field>
-          <Field label="Aadhar (optional)">
+          <Field label="Aadhaar Number (12 digits)">
             <input className={inputClass} value={form.aadhar} onChange={(e) => setForm({ ...form, aadhar: e.target.value })} placeholder="xxxx xxxx xxxx" />
           </Field>
-          <Field label="Mobile number">
-            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} />
+          <Field label="Mobile Number">
+            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} placeholder="9848012345" />
           </Field>
-          <Field label="Variety" className="sm:col-span-2">
+
+          <Field label="Produce Variety" className="sm:col-span-2">
             <div className="flex gap-2">
               <select
                 className={`${inputClass} flex-1`}
                 value={form.produce_variety_id}
                 onChange={(e) => setForm({ ...form, produce_variety_id: e.target.value })}
               >
-                <option value="">Select variety</option>
-                {varieties.map(v => (
-                  <option key={v.id} value={v.id}>{v.name_en}</option>
+                <option value="">Select Variety</option>
+                {varieties.map((v) => (
+                  <option key={v.id} value={v.id}>{v.name_en} ({v.category})</option>
                 ))}
               </select>
               <Button type="button" variant="ghost" onClick={() => setShowNewVariety(!showNewVariety)} className="shrink-0">
@@ -221,55 +413,53 @@ export default function Farmers() {
               </div>
             )}
           </Field>
-          <Field label="No. of bags">
-            <input type="number" className={inputClass} value={form.no_of_bags} onChange={(e) => setForm({ ...form, no_of_bags: e.target.value })} />
+
+          <Field label="Village / Town">
+            <input className={inputClass} value={form.village || form.place} onChange={(e) => setForm({ ...form, village: e.target.value, place: e.target.value })} placeholder="e.g. Angalakuduru" />
           </Field>
-          <Field label="Total weight (kg)">
-            <input type="number" step="0.01" className={inputClass} value={form.total_weight} onChange={(e) => setForm({ ...form, total_weight: e.target.value })} />
+          <Field label="Mandal">
+            <input className={inputClass} value={form.mandal} onChange={(e) => setForm({ ...form, mandal: e.target.value })} placeholder="e.g. Tenali Mandal" />
           </Field>
-          <Field label="MC reading">
-            <input type="number" step="0.01" className={inputClass} value={form.mc_reading} onChange={(e) => setForm({ ...form, mc_reading: e.target.value })} />
+          <Field label="District">
+            <input className={inputClass} value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} placeholder="e.g. Guntur" />
           </Field>
-          <Field label="Place">
-            <input className={inputClass} value={form.place} onChange={(e) => setForm({ ...form, place: e.target.value })} />
+
+          <Field label="No. of Bags">
+            <input type="number" className={inputClass} value={form.no_of_bags} onChange={(e) => setForm({ ...form, no_of_bags: e.target.value })} placeholder="0" />
           </Field>
-          <Field label="Cost (₹)">
-            <input type="number" step="0.01" className={inputClass} value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} />
+          <Field label="Total Weight (Quintals)">
+            <input type="number" step="0.01" className={inputClass} value={form.total_weight} onChange={(e) => setForm({ ...form, total_weight: e.target.value })} placeholder="0.00" />
           </Field>
-          <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
+          <Field label="Moisture Content (MC %)">
+            <input type="number" step="0.1" className={inputClass} value={form.mc_reading} onChange={(e) => setForm({ ...form, mc_reading: e.target.value })} placeholder="14.0" />
+          </Field>
+          <Field label="Total Estimated Cost (₹)" className="sm:col-span-2">
+            <input type="number" step="0.01" className={inputClass} value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} placeholder="0.00" />
+          </Field>
+
+          <div className="sm:col-span-2 flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 mt-2">
             <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="accent">{editing ? 'Save changes' : 'Add farmer'}</Button>
+            <Button type="submit" variant="primary">{editing ? 'Save Changes' : 'Register Farmer'}</Button>
           </div>
         </form>
       </Modal>
 
-      <Modal open={!!ledgerFarmer} onClose={() => setLedgerFarmer(null)} title={`Ledger · ${ledgerFarmer?.name || ''}`} wide>
+      {/* Farmer Ledger Modal */}
+      <Modal open={!!ledgerFarmer} onClose={() => setLedgerFarmer(null)} title={`Farmer Ledger Statement · ${ledgerFarmer?.name || ''}`} wide>
         {ledgerData && (
-          <div className="space-y-4">
+          <div className="space-y-5 text-slate-900 dark:text-slate-100">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-surfacealt rounded-lg p-3">
-                <div className="text-[11px] text-muted">Purchased</div>
-                <div className="font-mono text-[15px] font-semibold">₹{ledgerData.total_purchase_value.toLocaleString('en-IN')}</div>
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="text-[12px] text-slate-600 dark:text-slate-400 font-semibold">Total Purchase Value</div>
+                <div className="font-mono text-[18px] font-extrabold text-blue-700 dark:text-sky-400 mt-1">₹{ledgerData.total_purchase_value.toLocaleString('en-IN')}</div>
               </div>
-              <div className="bg-surfacealt rounded-lg p-3">
-                <div className="text-[11px] text-muted">Paid</div>
-                <div className="font-mono text-[15px] font-semibold">₹{ledgerData.total_paid.toLocaleString('en-IN')}</div>
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="text-[12px] text-slate-600 dark:text-slate-400 font-semibold">Total Paid Amount</div>
+                <div className="font-mono text-[18px] font-extrabold text-emerald-700 dark:text-emerald-400 mt-1">₹{ledgerData.total_paid.toLocaleString('en-IN')}</div>
               </div>
-              <div className="bg-danger/10 rounded-lg p-3">
-                <div className="text-[11px] text-danger">Outstanding</div>
-                <div className="font-mono text-[15px] font-semibold text-danger">₹{ledgerData.outstanding.toLocaleString('en-IN')}</div>
-              </div>
-            </div>
-            <div>
-              <h5 className="text-[12.5px] font-medium text-muted mb-2">Purchases</h5>
-              <div className="space-y-1 max-h-40 overflow-y-auto">
-                {ledgerData.purchases.length === 0 && <p className="text-[12.5px] text-muted">None yet</p>}
-                {ledgerData.purchases.map((p) => (
-                  <div key={p.id} className="flex justify-between text-[12.5px] py-1 border-b border-line/60">
-                    <span className="font-mono">{p.purchase_no}</span>
-                    <span>₹{p.net_payable.toLocaleString('en-IN')}</span>
-                  </div>
-                ))}
+              <div className="bg-rose-50 dark:bg-rose-950/40 p-4 rounded-xl border border-rose-200 dark:border-rose-900">
+                <div className="text-[12px] text-rose-700 dark:text-rose-400 font-semibold">Outstanding Balance</div>
+                <div className="font-mono text-[18px] font-extrabold text-rose-700 dark:text-rose-400 mt-1">₹{ledgerData.outstanding.toLocaleString('en-IN')}</div>
               </div>
             </div>
           </div>

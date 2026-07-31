@@ -8,46 +8,70 @@ html, body, #root {
 }
 
 body {
-  @apply bg-bg text-ink font-sans antialiased;
+  @apply bg-bg text-ink font-sans antialiased transition-colors duration-200;
+  background-color: #f8fafc;
+  color: #0f172a;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   overscroll-behavior: none;
 }
 
-/* Prevent iOS input zoom */
-@supports (-webkit-touch-callout: none) {
-  input, select, textarea {
-    font-size: 16px !important;
-  }
+html.dark body {
+  background-color: #090d16 !important;
+  color: #f8fafc !important;
 }
 
-
 ::selection {
-  background: #D9A441;
-  color: #163832;
+  background: #2563eb;
+  color: #ffffff;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #B8C4BC transparent;
+  scrollbar-color: #cbd5e1 #f8fafc;
 }
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+*::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
 *::-webkit-scrollbar-thumb {
-  background: #B8C4BC;
+  background: #cbd5e1;
   border-radius: 8px;
 }
+*::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 
-.grain-rail {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    #D9A441 0px,
-    #D9A441 3px,
-    transparent 3px,
-    transparent 10px
-  );
+html.dark *::-webkit-scrollbar-track {
+  background: #090d16;
+}
+html.dark *::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+html.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+}
+
+.glass-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+}
+html.dark .glass-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -59,6 +83,6 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid #D9A441;
+  outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
