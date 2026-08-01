@@ -4,11 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutGrid, Users, Factory, ShoppingCart, TrendingUp,
   Warehouse, Wallet, Receipt, FileText, Menu, X, LogOut, Wheat, Truck,
-  ChevronLeft, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, Clock, Bell, AlertTriangle, Check, Globe
+  ChevronLeft, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, Clock, Bell, AlertTriangle, Check, Globe, WifiOff
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import useNetwork from '../hooks/useNetwork.js'
 import AIChatbot from './AIChatbot.jsx'
 
 export default function Layout({ children }) {
@@ -22,6 +23,7 @@ export default function Layout({ children }) {
   const { user, logout } = useAuth()
   const { isDark, toggleTheme } = useTheme()
   const { lang, setLang, t } = useLanguage()
+  const isOnline = useNetwork()
   const location = useLocation()
   const navigate = useNavigate()
   const notifRef = useRef(null)
@@ -381,6 +383,20 @@ export default function Layout({ children }) {
             </div>
           </div>
         </header>
+
+        <AnimatePresence>
+          {!isOnline && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="bg-rose-500 text-white px-4 py-2 flex items-center justify-center gap-2 shadow-inner"
+            >
+              <WifiOff size={16} className="animate-pulse" />
+              <span className="text-sm font-bold">You are offline. Some features may not be available.</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <main className="flex-1 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-[1500px] w-full mx-auto">
           <AnimatePresence mode="wait">

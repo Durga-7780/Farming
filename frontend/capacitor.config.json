@@ -1,0 +1,5 @@
+{
+  "appId": "com.agroledger.app",
+  "appName": "AgroLedger",
+  "webDir": "dist"
+}
