@@ -3,277 +3,245 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 const LanguageContext = createContext()
 
 const nameTokenMap = {
-  'Anand': 'ఆనంద్',
-  'Chari': 'చారి',
-  'Murthy': 'మూర్తి',
-  'Prasad': 'ప్రసాద్',
-  'Anjaneyulu': 'ఆంజనేయులు',
-  'Reddy': 'రెడ్డి',
-  'Ashok': 'అశోక్',
-  'Lokesh': 'లోకేష్',
-  'Sharma': 'శర్మ',
-  'Madhav': 'మాధవ్',
-  'Rao': 'రావు',
-  'Gopal': 'గోపాల్',
-  'Kumar': 'కుమార్',
-  'Subba': 'సుబ్బా',
-  'Chowdary': 'చౌదరి',
-  'Lakshmana': 'లక్ష్మణ',
-  'Koundinya': 'కౌండిన్య',
-  'Babu': 'బాబు',
-  'Suresh': 'సురేష్',
-  'Venkateswara': 'వేంకటేశ్వర',
-  'Satyanarayana': 'సత్యనారాయణ',
-  'Ramesh': 'రమేష్',
-  'Murali': 'మురళి',
-  'Balaji': 'బాలాజీ',
-  'Annapurna': 'అన్నపూర్ణ',
-  'Krishna': 'కృష్ణ',
-  'Rama': 'రామ',
-  'Vijaya': 'విజయ',
-  'Durga': 'దుర్గా',
-  'Lakshmi': 'లక్ష్మీ',
-  'Naidu': 'నాయుడు',
-  'Raju': 'రాజు',
-  'Venkatesh': 'వెంకటేష్',
-  'Srinivas': 'శ్రీనివాస్',
-  'Srinivasa': 'శ్రీనివాస',
-  'Narayana': 'నారాయణ',
-  'Koteswara': 'కోటేశ్వర',
-  'Siva': 'శివ',
-  'Shiva': 'శివ',
-  'Shankar': 'శంకర్',
-  'Sankar': 'శంకర్',
-  'Sekhar': 'శేఖర్',
-  'Shekhar': 'శేఖర్',
-  'Venkat': 'వెంకట్',
-  'Chandra': 'చంద్ర',
-  'Mohan': 'మోహన్',
-  'Kiran': 'కిరణ్',
-  'Rajesh': 'రాజేష్',
-  'Naresh': 'నరేష్',
-  'Mahesh': 'మహేష్',
-  'Dinesh': 'దినేష్',
-  'Ganesh': 'గణేష్',
-  'Bhanu': 'భాను',
-  'Prakash': 'ప్రకాష్',
-  'Jagadeesh': 'జగదీష్',
-  'Venu': 'వేణు',
-  'Bhaskar': 'భాస్కర్',
-  'Venkataramana': 'వేంకటరమణ',
-  'Ramana': 'రమణ',
-  'Apparao': 'అప్పారావు',
-  'Subbarao': 'సుబ్బారావు',
-  'Nageswara': 'నాగేశ్వర',
-  'Nagendra': 'నాగేంద్ర',
-  'Phani': 'ఫణి',
-  'Pavan': 'పవన్',
-  'Pawan': 'పవన్',
-  'Kalyan': 'కళ్యాణ్',
-  'Venkata': 'వెంకట',
-  'Sundar': 'సుందర్',
-  'Gupta': 'గుప్తా',
-  'Jagadeeshwara': 'జగదీశ్వర',
-  'Varma': 'వర్మ',
-  'Verma': 'వర్మ',
-  'Chandrasekhar': 'చంద్రశేఖర్',
-  'Chandrashekar': 'చంద్రశేఖర్',
-  'Chandrashekhar': 'చంద్రశేఖర్',
-  'Chenna': 'చెన్న',
-  'Baskhar': 'భాస్కర్',
-  'Sudhakar': 'సుధాకర్',
-  'Prabhakar': 'ప్రభాకర్',
-  'Ratnakar': 'రత్నాకర్',
-  'Madhukar': 'మధుకర్',
-  'Diwakar': 'దివాకర్',
-  'Somasekhar': 'సోమశేఖర్',
-  'Rajashekhar': 'రాజశేఖర్',
-  'Rajashekar': 'రాజశేఖర్',
-  'Gopala': 'గోపాల',
-  'Govinda': 'గోవింద',
-  'Subrahmanyam': 'సుబ్రహ్మణ్యం',
-  'Subramanyam': 'సుబ్రహ్మణ్యం',
-  'Venkatrao': 'వెంకటరావు',
-  'Suryanarayana': 'సూర్యనారాయణ',
-  'Lakshminarayana': 'లక్ష్మీనారాయణ',
-  'Radhakrishna': 'రాధాకృష్ణ',
-  'Ramakrishna': 'రామకృష్ణ',
-  'Sitarama': 'సీతారామ',
-  'Sitaram': 'సీతారామ్',
-  'Hanumantha': 'హనుమంత',
-  'Veerabhadra': 'వీరభద్ర',
-  'Kondal': 'కొండల్',
-  'Mallikarjuna': 'మల్లికార్జున',
-  'Narsimha': 'నరసింహ',
-  'Narasimha': 'నరసింహ',
-  'Simhachalam': 'సింహాచలం',
-  'Tirupati': 'తిరుపతి',
-  'Tirupathi': 'తిరుపతి',
-  'Sastry': 'శాస్త్రి',
-  'Shastri': 'శాస్త్రి',
-  'Satish': 'సతీష్',
-  'Harish': 'హరీష్',
-  'Girish': 'గిరీష్',
-  'Nagesh': 'నాగేష్',
-  'Singh': 'సింగ్',
-  'Joshi': 'జోషి',
-  'Moorthy': 'మూర్తి',
-  'Choudhary': 'చౌదరి',
-  // Common words used in agriculture/business context
-  'Sri': 'శ్రీ',
-  'Sree': 'శ్రీ',
-  'Rice': 'రైస్',
-  'Mill': 'మిల్లు',
-  'Agro': 'ఆగ్రో',
-  'Industries': 'ఇండస్ట్రీస్',
-  'Processing': 'ప్రాసెసింగ్',
-  'Unit': 'యూనిట్',
-  'Modern': 'మోడర్న్',
-  'Oil': 'ఆయిల్',
-  'New': 'న్యూ',
-  'Old': 'ఓల్డ్',
-  'Nagar': 'నగర్',
-  'Colony': 'కాలనీ',
-  'Street': 'స్ట్రీట్',
-  'Village': 'గ్రామం',
-  'Town': 'టౌన్',
-  'City': 'సిటీ',
-  'District': 'జిల్లా',
-  'Mandal': 'మండలం',
-  'State': 'రాష్ట్రం',
-  'Paddy': 'వరి',
-  'Fine': 'ఫైన్',
-  'Common': 'కామన్',
-  'Sona': 'సోనా',
-  'Masuri': 'మసూరి',
-  'BPT': 'బిపిటి',
-  'MTU': 'ఎమ్టియు',
-  'Chilli': 'మిరప',
-  'Black': 'నల్ల',
-  'Gram': 'మినుములు',
-  'Groundnut': 'వేరుశనగ',
-  'Cotton': 'పత్తి',
-  'Maize': 'మొక్కజొన్న',
-  'Royal': 'రాయల్',
-  'Kakatiya': 'కాకతీయ',
-  'Andhra': 'ఆంధ్ర',
-  'Pradesh': 'ప్రదేశ్',
+  // --- Telugu Names (First Names) ---
+  'Anand': 'ఆనంద్', 'Chari': 'చారి', 'Murthy': 'మూర్తి', 'Prasad': 'ప్రసాద్',
+  'Anjaneyulu': 'ఆంజనేయులు', 'Reddy': 'రెడ్డి', 'Ashok': 'అశోక్',
+  'Lokesh': 'లోకేష్', 'Sharma': 'శర్మ', 'Madhav': 'మాధవ్', 'Rao': 'రావు',
+  'Gopal': 'గోపాల్', 'Kumar': 'కుమార్', 'Subba': 'సుబ్బా', 'Chowdary': 'చౌదరి',
+  'Lakshmana': 'లక్ష్మణ', 'Koundinya': 'కౌండిన్య', 'Babu': 'బాబు',
+  'Suresh': 'సురేష్', 'Venkateswara': 'వేంకటేశ్వర', 'Satyanarayana': 'సత్యనారాయణ',
+  'Ramesh': 'రమేష్', 'Murali': 'మురళి', 'Balaji': 'బాలాజీ', 'Annapurna': 'అన్నపూర్ణ',
+  'Krishna': 'కృష్ణ', 'Rama': 'రామ', 'Vijaya': 'విజయ', 'Durga': 'దుర్గా',
+  'Lakshmi': 'లక్ష్మీ', 'Naidu': 'నాయుడు', 'Raju': 'రాజు', 'Venkatesh': 'వెంకటేష్',
+  'Srinivas': 'శ్రీనివాస్', 'Srinivasa': 'శ్రీనివాస', 'Narayana': 'నారాయణ',
+  'Koteswara': 'కోటేశ్వర', 'Siva': 'శివ', 'Shiva': 'శివ', 'Shankar': 'శంకర్',
+  'Sankar': 'శంకర్', 'Sekhar': 'శేఖర్', 'Shekhar': 'శేఖర్', 'Venkat': 'వెంకట్',
+  'Chandra': 'చంద్ర', 'Mohan': 'మోహన్', 'Kiran': 'కిరణ్', 'Rajesh': 'రాజేష్',
+  'Naresh': 'నరేష్', 'Mahesh': 'మహేష్', 'Dinesh': 'దినేష్', 'Ganesh': 'గణేష్',
+  'Bhanu': 'భాను', 'Prakash': 'ప్రకాష్', 'Jagadeesh': 'జగదీష్', 'Venu': 'వేణు',
+  'Bhaskar': 'భాస్కర్', 'Venkataramana': 'వేంకటరమణ', 'Ramana': 'రమణ',
+  'Apparao': 'అప్పారావు', 'Subbarao': 'సుబ్బారావు', 'Nageswara': 'నాగేశ్వర',
+  'Nagendra': 'నాగేంద్ర', 'Phani': 'ఫణి', 'Pavan': 'పవన్', 'Pawan': 'పవన్',
+  'Kalyan': 'కళ్యాణ్', 'Venkata': 'వెంకట', 'Sundar': 'సుందర్', 'Gupta': 'గుప్తా',
+  'Jagadeeshwara': 'జగదీశ్వర', 'Varma': 'వర్మ', 'Verma': 'వర్మ',
+  'Chandrasekhar': 'చంద్రశేఖర్', 'Chandrashekar': 'చంద్రశేఖర్',
+  'Chandrashekhar': 'చంద్రశేఖర్', 'Chenna': 'చెన్న', 'Sudhakar': 'సుధాకర్',
+  'Prabhakar': 'ప్రభాకర్', 'Ratnakar': 'రత్నాకర్', 'Madhukar': 'మధుకర్',
+  'Diwakar': 'దివాకర్', 'Somasekhar': 'సోమశేఖర్', 'Rajashekhar': 'రాజశేఖర్',
+  'Rajashekar': 'రాజశేఖర్', 'Gopala': 'గోపాల', 'Govinda': 'గోవింద',
+  'Subrahmanyam': 'సుబ్రహ్మణ్యం', 'Subramanyam': 'సుబ్రహ్మణ్యం',
+  'Venkatrao': 'వెంకటరావు', 'Suryanarayana': 'సూర్యనారాయణ',
+  'Lakshminarayana': 'లక్ష్మీనారాయణ', 'Radhakrishna': 'రాధాకృష్ణ',
+  'Ramakrishna': 'రామకృష్ణ', 'Sitarama': 'సీతారామ', 'Sitaram': 'సీతారామ్',
+  'Hanumantha': 'హనుమంత', 'Veerabhadra': 'వీరభద్ర', 'Kondal': 'కొండల్',
+  'Mallikarjuna': 'మల్లికార్జున', 'Narsimha': 'నరసింహ', 'Narasimha': 'నరసింహ',
+  'Simhachalam': 'సింహాచలం', 'Tirupati': 'తిరుపతి', 'Tirupathi': 'తిరుపతి',
+  'Sastry': 'శాస్త్రి', 'Shastri': 'శాస్త్రి', 'Satish': 'సతీష్',
+  'Harish': 'హరీష్', 'Girish': 'గిరీష్', 'Nagesh': 'నాగేష్', 'Singh': 'సింగ్',
+  'Joshi': 'జోషి', 'Moorthy': 'మూర్తి', 'Choudhary': 'చౌదరి',
+  // Additional farmer names from database
+  'Bharata': 'భరత', 'Dharmendra': 'ధర్మేంద్ర', 'Gopi': 'గోపి',
+  'Hemant': 'హేమంత్', 'Jagan': 'జగన్', 'Jitendra': 'జితేంద్ర',
+  'Kishore': 'కిషోర్', 'Madhusudhan': 'మధుసూదన్', 'Narendra': 'నరేంద్ర',
+  'Parandhama': 'పరంధామ', 'Pradeep': 'ప్రదీప్', 'Purushottam': 'పురుషోత్తమ్',
+  'Raghava': 'రాఘవ', 'Ramachandra': 'రామచంద్ర', 'Ravindra': 'రవీంద్ర',
+  'Sambasiva': 'సాంబశివ', 'Santosh': 'సంతోష్', 'Shatrughna': 'శత్రుఘ్న',
+  'Sudheer': 'సుధీర్', 'Surendra': 'సురేంద్ర', 'Swamy': 'స్వామి',
+  'Tarun': 'తరుణ్', 'Upendra': 'ఉపేంద్ర', 'Vijay': 'విజయ్',
+  // --- Mill / Business Terms ---
+  'Sri': 'శ్రీ', 'Sree': 'శ్రీ', 'Rice': 'రైస్', 'Mill': 'మిల్లు',
+  'Agro': 'ఆగ్రో', 'Industries': 'ఇండస్ట్రీస్', 'Processing': 'ప్రాసెసింగ్',
+  'Unit': 'యూనిట్', 'Modern': 'మోడర్న్', 'Oil': 'ఆయిల్', 'New': 'న్యూ',
+  'Old': 'ఓల్డ్', 'Nagar': 'నగర్', 'Colony': 'కాలనీ', 'Street': 'స్ట్రీట్',
+  'Village': 'గ్రామం', 'Town': 'టౌన్', 'City': 'సిటీ', 'District': 'జిల్లా',
+  'Mandal': 'మండలం', 'State': 'రాష్ట్రం', 'Royal': 'రాయల్',
+  'Kakatiya': 'కాకతీయ', 'Andhra': 'ఆంధ్ర', 'Pradesh': 'ప్రదేశ్',
   'Telangana': 'తెలంగాణ',
-  'Kodad': 'కోదాడ',
-  'bags': 'బస్తాలు',
-  'qtl': 'క్వింటాళ్ళు',
-  // Locations & Roads
-  'Armoor': 'ఆర్మూర్',
-  'Nandyal': 'నంద్యాల',
-  'Highway': 'హైవే',
-  'Port': 'పోర్ట్',
-  'Road': 'రోడ్డు',
-  'Kakinada': 'కాకినాడ',
-  'Kurnool': 'కర్నూలు',
-  'Nizamabad': 'నిజామాబాద్',
-  'AP': 'ఆంధ్రప్రదేశ్',
-  'TS': 'తెలంగాణ',
-  'Autonagar': 'ఆటోనగర్',
-  'Vijayawada': 'విజయవాడ',
-  'Warangal': 'వరంగల్',
-  'Jangaon': 'జనగామ',
-  'Industrial': 'ఇండస్ట్రియల్',
-  'Estate': 'ఎస్టేట్',
-  'Miryalaguda': 'మిర్యాలగూడ',
-  'Bypass': 'బైపాస్',
-  'Eluru': 'ఏలూరు',
-  'Piduguralla': 'పిడుగురాళ్ళ',
-  'Main': 'మెయిన్',
-  'Huzurabad': 'హుజూరాబాద్',
-  'Khammam': 'ఖమ్మం',
-  'Suryapet': 'సూర్యాపేట',
-  'Tenali': 'తెనాలి',
-  'Guntur': 'గుంటూరు',
+  // --- Crop / Produce Terms ---
+  'Paddy': 'వరి', 'Fine': 'ఫైన్', 'Common': 'కామన్', 'Sona': 'సోనా',
+  'Masuri': 'మసూరి', 'BPT': 'బిపిటి', 'MTU': 'ఎమ్టియు',
+  'Chilli': 'మిరప', 'Black': 'నల్ల', 'Gram': 'మినుములు',
+  'Groundnut': 'వేరుశనగ', 'Cotton': 'పత్తి', 'Maize': 'మొక్కజొన్న',
+  'bags': 'బస్తాలు', 'qtl': 'క్వింటాళ్ళు', 'Quintal': 'క్వింటాల్',
+  // --- Locations, Villages & Roads ---
+  'Armoor': 'ఆర్మూర్', 'Nandyal': 'నంద్యాల', 'Highway': 'హైవే',
+  'Port': 'పోర్ట్', 'Road': 'రోడ్డు', 'Kakinada': 'కాకినాడ',
+  'Kurnool': 'కర్నూలు', 'Nizamabad': 'నిజామాబాద్', 'Autonagar': 'ఆటోనగర్',
+  'Vijayawada': 'విజయవాడ', 'Warangal': 'వరంగల్', 'Jangaon': 'జనగామ',
+  'Industrial': 'ఇండస్ట్రియల్', 'Estate': 'ఎస్టేట్',
+  'Miryalaguda': 'మిర్యాలగూడ', 'Bypass': 'బైపాస్', 'Eluru': 'ఏలూరు',
+  'Piduguralla': 'పిడుగురాళ్ళ', 'Main': 'మెయిన్', 'Huzurabad': 'హుజూరాబాద్',
+  'Khammam': 'ఖమ్మం', 'Suryapet': 'సూర్యాపేట', 'Tenali': 'తెనాలి',
+  'Guntur': 'గుంటూరు', 'Hyderabad': 'హైదరాబాద్', 'Kodad': 'కోదాడ',
+  // Farmer villages from database
+  'Alamuru': 'ఆలమూరు', 'Angalakuduru': 'ఆంగలకుదురు', 'Anksapur': 'అంక్సాపూర్',
+  'Bhattiprolu': 'భట్టిప్రోలు', 'Challapalli': 'చల్లపల్లి',
+  'Chivvemla': 'చివ్వెమ్ల', 'Ganapavaram': 'గణపవరం', 'Jonnada': 'జొన్నాడ',
+  'Karlapalem': 'కర్లపాలెం', 'Korutla': 'కొరుట్ల', 'Kuchipudi': 'కూచిపూడి',
+  'Mallial': 'మల్లియాల్', 'Mantada': 'మంతాడ', 'Nidumolu': 'నిడుమోలు',
+  'Pedana': 'పెదన', 'Pentapadu': 'పెంటపాడు', 'Pippara': 'పిప్పర',
+  'Relangi': 'రేలంగి', 'Rudravaram': 'రుద్రవరం', 'Ryali': 'ర్యాలి',
+  'Sirikonda': 'సిరికొండ', 'Tripuraram': 'త్రిపురారం', 'Undi': 'ఉండి',
+  'Veldurthi': 'వెల్దుర్తి', 'Vemulapally': 'వేములపల్లి',
+  // State abbreviations
+  'AP': 'ఆంధ్రప్రదేశ్', 'TS': 'తెలంగాణ',
   // Single-letter initials
-  'M': 'ఎమ్',
-  'V': 'వి',
-  'P': 'పి',
-  'Ch': 'సిహెచ్',
-  'G': 'జి',
-  'K': 'కే',
-  'S': 'ఎస్',
-  'R': 'ఆర్',
-  'B': 'బి',
-  'D': 'డి',
-  'T': 'టి',
-  'A': 'ఎ',
-  'N': 'ఎన్',
-  'L': 'ఎల్',
-  'H': 'హెచ్',
-  'J': 'జే',
-  'C': 'సి'
+  'M': 'ఎమ్', 'V': 'వి', 'P': 'పి', 'Ch': 'సిహెచ్', 'G': 'జి',
+  'K': 'కే', 'S': 'ఎస్', 'R': 'ఆర్', 'B': 'బి', 'D': 'డి', 'T': 'టి',
+  'A': 'ఎ', 'N': 'ఎన్', 'L': 'ఎల్', 'H': 'హెచ్', 'J': 'జే', 'C': 'సి',
+  // Common English words in context
+  'Aadhaar': 'ఆధార్', 'Bank': 'బ్యాంక్', 'Account': 'ఖాతా', 'Total': 'మొత్తం',
+  'Paid': 'చెల్లించిన', 'Pending': 'పెండింగ్', 'Active': 'యాక్టివ్',
+  'Inactive': 'నిష్క్రియ', 'Yes': 'అవును', 'No': 'కాదు',
 }
 
-// Automatic phonetic English-to-Telugu transliteration engine
-// This converts ANY English text to Telugu script automatically
-const teluguPhoneticMap = {
-  // Vowels
-  'aa': 'ా', 'ee': 'ీ', 'ii': 'ీ', 'oo': 'ూ', 'uu': 'ూ',
-  'ai': 'ై', 'ei': 'ై', 'au': 'ౌ', 'ou': 'ౌ',
-  // Consonant clusters
-  'sh': 'శ', 'th': 'త', 'ch': 'చ', 'bh': 'భ', 'dh': 'ధ',
-  'gh': 'ఘ', 'jh': 'ఝ', 'kh': 'ఖ', 'ph': 'ఫ', 'ng': 'ంగ',
-  'nk': 'ంక', 'nd': 'ండ', 'nt': 'ంట', 'mp': 'ంప', 'mb': 'ంబ',
-  'tr': 'ట్ర', 'dr': 'డ్ర', 'pr': 'ప్ర', 'br': 'బ్ర', 'kr': 'క్ర',
-  'gr': 'గ్ర', 'fr': 'ఫ్ర', 'sr': 'స్ర', 'str': 'స్ట్ర',
-  // Basic consonants
-  'k': 'క', 'g': 'గ', 'c': 'క', 'j': 'జ', 't': 'ట',
-  'd': 'డ', 'n': 'న', 'p': 'ప', 'b': 'బ', 'm': 'మ',
-  'y': 'య', 'r': 'ర', 'l': 'ల', 'v': 'వ', 'w': 'వ',
-  's': 'స', 'h': 'హ', 'f': 'ఫ', 'z': 'జ', 'x': 'క్స',
-  'q': 'క',
-  // Vowels standalone
-  'a': 'అ', 'e': 'ఎ', 'i': 'ఇ', 'o': 'ఒ', 'u': 'ఉ'
+// Build a case-insensitive lookup from nameTokenMap
+const nameTokenMapLower = {}
+for (const key in nameTokenMap) {
+  nameTokenMapLower[key.toLowerCase()] = nameTokenMap[key]
+}
+
+// ============================================================
+// Proper syllable-based English-to-Telugu auto-transliteration
+// This handles consonant + vowel matra combinations correctly
+// ============================================================
+
+// Telugu consonant base characters
+const teluguConsonants = {
+  // Multi-character consonants (check first, longest match wins)
+  'shh': 'ష', 'sh': 'శ', 'chh': 'ఛ', 'ch': 'చ',
+  'th': 'త', 'dh': 'ద', 'bh': 'భ', 'ph': 'ఫ',
+  'gh': 'ఘ', 'jh': 'ఝ', 'kh': 'ఖ',
+  // Single consonants (dental d/t for Indian names)
+  'k': 'క', 'g': 'గ', 'c': 'క', 'j': 'జ',
+  't': 'త', 'd': 'ద', 'n': 'న', 'p': 'ప',
+  'b': 'బ', 'm': 'మ', 'y': 'య', 'r': 'ర',
+  'l': 'ల', 'v': 'వ', 'w': 'వ', 's': 'స',
+  'h': 'హ', 'f': 'ఫ', 'z': 'జ', 'q': 'క', 'x': 'క్స',
+}
+
+// Telugu vowel matras (applied after consonant character)
+const teluguVowelMatras = {
+  'aa': 'ా', 'ai': 'ై', 'au': 'ౌ',
+  'ee': 'ీ', 'ea': 'ీ', 'ei': 'ై',
+  'oo': 'ూ', 'ou': 'ౌ',
+  'ii': 'ీ', 'uu': 'ూ',
+  'a': '',   'e': 'ె',  'i': 'ి',
+  'o': 'ొ',  'u': 'ు',
+}
+
+// Telugu standalone vowels (word-initial or after another vowel)
+const teluguStandaloneVowels = {
+  'aa': 'ఆ', 'ai': 'ఐ', 'au': 'ఔ',
+  'ee': 'ఈ', 'ea': 'ఈ', 'ei': 'ఐ',
+  'oo': 'ఊ', 'ou': 'ఔ',
+  'ii': 'ఈ', 'uu': 'ఊ',
+  'a': 'అ',  'e': 'ఎ',  'i': 'ఇ',
+  'o': 'ఒ',  'u': 'ఉ',
+}
+
+const HALANT = '్' // Telugu virama - suppresses inherent vowel
+
+function isVowelChar(ch) {
+  return 'aeiou'.includes(ch)
 }
 
 function autoTransliterateToTelugu(word) {
   if (!word || typeof word !== 'string') return word
-  // Skip if already contains Telugu or numbers or special chars
-  if (/[\u0C00-\u0C7F]/.test(word)) return word
-  if (/^\d+$/.test(word)) return word
-  if (/^[^a-zA-Z]+$/.test(word)) return word
-  
-  let result = ''
+  if (/[\u0C00-\u0C7F]/.test(word)) return word // Already Telugu
+  if (/^\d+$/.test(word)) return word            // Pure numbers
+  if (/^[^a-zA-Z]+$/.test(word)) return word     // Non-alphabetic
+
   const lower = word.toLowerCase()
+  let result = ''
   let i = 0
-  
+
   while (i < lower.length) {
-    let matched = false
-    // Try matching 3-char, then 2-char, then 1-char sequences
+    // 1. Try to match a consonant (longest match first: 3, 2, 1)
+    let consonant = null
+    let cLen = 0
     for (let len = 3; len >= 1; len--) {
-      const chunk = lower.substring(i, i + len)
-      if (teluguPhoneticMap[chunk]) {
-        result += teluguPhoneticMap[chunk]
-        i += len
-        matched = true
+      const sub = lower.substring(i, i + len)
+      if (teluguConsonants[sub]) {
+        consonant = teluguConsonants[sub]
+        cLen = len
         break
       }
     }
-    if (!matched) {
+
+    if (consonant) {
+      i += cLen
+      // 2. After consonant, look for a vowel to form a syllable
+      let vowelMatra = null
+      let vLen = 0
+      for (let len = 2; len >= 1; len--) {
+        const sub = lower.substring(i, i + len)
+        if (teluguVowelMatras[sub] !== undefined) {
+          vowelMatra = teluguVowelMatras[sub]
+          vLen = len
+          break
+        }
+      }
+
+      if (vowelMatra !== null) {
+        // Consonant + vowel matra (e.g., క + ు = కు for "ku")
+        result += consonant + vowelMatra
+        i += vLen
+      } else if (i < lower.length && !isVowelChar(lower[i])) {
+        // Consonant followed by another consonant → add halant
+        result += consonant + HALANT
+      } else if (i >= lower.length) {
+        // Consonant at end of word → add halant to suppress inherent 'a'
+        result += consonant + HALANT
+      } else {
+        // Fallback
+        result += consonant
+      }
+    } else if (isVowelChar(lower[i])) {
+      // 3. Standalone vowel (word-initial or after another vowel)
+      let vowel = null
+      let vLen = 0
+      for (let len = 2; len >= 1; len--) {
+        const sub = lower.substring(i, i + len)
+        if (teluguStandaloneVowels[sub]) {
+          vowel = teluguStandaloneVowels[sub]
+          vLen = len
+          break
+        }
+      }
+      if (vowel) {
+        result += vowel
+        i += vLen
+      } else {
+        result += lower[i]
+        i++
+      }
+    } else {
+      // 4. Unknown character (numbers, symbols, etc.) - keep as-is
       result += lower[i]
       i++
     }
   }
+
   return result
 }
 
 function transliterateNameToTelugu(nameStr) {
   if (!nameStr || typeof nameStr !== 'string') return nameStr
-  // Don't transliterate pure numbers, dates, or currency
+  // Don't transliterate pure numbers, dates, currency, or codes like FRM00201
   if (/^\d/.test(nameStr) || /^[₹$€]/.test(nameStr)) return nameStr
-  
-  const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,|\.|\&|:)/)
+  if (/^[A-Z]{2,5}\d+/.test(nameStr)) return nameStr // Codes like FRM00201, DISP-2026
+
+  const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,|\.|&|:)/)
   return tokens.map((token) => {
-    // Check dictionary first (exact match)
+    // 1. Exact dictionary match (case-sensitive)
     if (nameTokenMap[token]) return nameTokenMap[token]
     const trimmed = token.trim()
     if (nameTokenMap[trimmed]) return nameTokenMap[trimmed]
-    // For unknown words that are alphabetic, auto-transliterate phonetically
+    // 2. Case-insensitive dictionary match
+    const lowerTrimmed = trimmed.toLowerCase()
+    if (nameTokenMapLower[lowerTrimmed]) return nameTokenMapLower[lowerTrimmed]
+    // 3. For unknown alphabetic words (2+ chars), auto-transliterate phonetically
     if (/^[a-zA-Z]{2,}$/.test(trimmed)) {
       return autoTransliterateToTelugu(trimmed)
     }
@@ -720,21 +688,90 @@ export function LanguageProvider({ children }) {
     return localStorage.getItem('agroledger_lang') || 'en'
   })
 
+  // Dynamic API Translation cache stored in localStorage
+  const [apiCache, setApiCache] = useState(() => {
+    try {
+      const stored = localStorage.getItem('agroledger_trans_cache')
+      return stored ? JSON.parse(stored) : {}
+    } catch {
+      return {}
+    }
+  })
+
+  const pendingRequests = useRef(new Set())
+
   useEffect(() => {
     localStorage.setItem('agroledger_lang', lang)
   }, [lang])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('agroledger_trans_cache', JSON.stringify(apiCache))
+    } catch (e) {
+      console.warn('Failed to save translation cache', e)
+    }
+  }, [apiCache])
 
   const toggleLanguage = (selectedLang) => {
     setLang(selectedLang)
   }
 
+  // Fetch neural translation from backend API for unknown strings
+  const fetchApiTranslation = (text) => {
+    if (!text || typeof text !== 'string') return
+    const clean = text.trim()
+    if (!clean || clean.length < 2) return
+    const cacheKey = clean.toLowerCase()
+
+    if (apiCache[cacheKey] || pendingRequests.current.has(cacheKey)) return
+
+    pendingRequests.current.add(cacheKey)
+
+    fetch(`http://localhost:2028/api/translate?text=${encodeURIComponent(clean)}&target_lang=te`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.translated) {
+          setApiCache((prev) => ({
+            ...prev,
+            [cacheKey]: data.translated
+          }))
+        }
+      })
+      .catch((err) => {
+        console.error('Translation API error:', err)
+      })
+      .finally(() => {
+        pendingRequests.current.delete(cacheKey)
+      })
+  }
+
   const t = (key) => {
     if (!key) return ''
+    if (typeof key !== 'string') return key
+
     const translated = translations[lang]?.[key] || translations['en']?.[key]
     if (translated) return translated
+
     if (lang === 'te') {
-      return transliterateNameToTelugu(key)
+      const trimmedKey = key.trim()
+      const cacheKey = trimmedKey.toLowerCase()
+
+      // 1. Check API neural translation cache
+      if (apiCache[cacheKey]) {
+        return apiCache[cacheKey]
+      }
+
+      // 2. Check static transliteration dictionary & rules
+      const dictionaryOrRulesResult = transliterateNameToTelugu(key)
+
+      // 3. Trigger background fetch from Google Translate NMT API if not in cache
+      if (/^[a-zA-Z]/.test(trimmedKey) && !apiCache[cacheKey]) {
+        fetchApiTranslation(trimmedKey)
+      }
+
+      return dictionaryOrRulesResult
     }
+
     return key
   }
 

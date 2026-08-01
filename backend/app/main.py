@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from .database import Base, engine
 from . import models
-from .routers import auth, farmers, mills, masters, purchases, sales, payments, expenses, stock, dashboard, ai, dispatch
+from .routers import auth, farmers, mills, masters, purchases, sales, payments, expenses, stock, dashboard, ai, dispatch, translate
 
 load_dotenv()
 
@@ -36,6 +36,7 @@ app.include_router(stock.router)
 app.include_router(dashboard.router)
 app.include_router(ai.router)
 app.include_router(dispatch.router)
+app.include_router(translate.router)
 
 
 @app.get("/api/health")
