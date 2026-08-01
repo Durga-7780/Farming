@@ -43,10 +43,10 @@ export default function AIChatbot() {
       {/* Prominent Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-20 right-6 md:bottom-24 md:right-8 w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 border-2 border-white dark:border-slate-800 shadow-blue-600/40 ${isOpen ? 'hidden' : ''}`}
+        className={`fixed bottom-[72px] right-4 md:bottom-8 md:right-8 w-12 h-12 md:w-16 md:h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 border-2 border-white dark:border-slate-800 shadow-blue-600/40 ${isOpen ? 'hidden' : ''}`}
         title="AgroLedger AI Assistant"
       >
-        <Sparkles size={28} className="animate-pulse" />
+        <Sparkles size={22} className="animate-pulse md:w-7 md:h-7" />
       </button>
 
       {/* Spacious Chat Window */}
@@ -56,8 +56,8 @@ export default function AIChatbot() {
             initial={{ opacity: 0, y: 24, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.94 }}
-            className="fixed bottom-20 right-6 md:bottom-24 md:right-8 w-[450px] max-w-[calc(100vw-32px)] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 flex flex-col overflow-hidden"
-            style={{ maxHeight: '680px', height: '82vh' }}
+            className="fixed bottom-[72px] right-4 md:bottom-8 md:right-8 w-[calc(100vw-32px)] md:w-[450px] max-w-[450px] bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 flex flex-col overflow-hidden"
+            style={{ maxHeight: 'calc(100vh - 140px)', height: '70vh' }}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 px-5 py-4 flex items-center justify-between text-white border-b border-slate-800">

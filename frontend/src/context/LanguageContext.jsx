@@ -119,6 +119,49 @@ const nameTokenMap = {
   'Joshi': 'జోషి',
   'Moorthy': 'మూర్తి',
   'Choudhary': 'చౌదరి',
+  // Common words used in agriculture/business context
+  'Sri': 'శ్రీ',
+  'Sree': 'శ్రీ',
+  'Rice': 'రైస్',
+  'Mill': 'మిల్లు',
+  'Agro': 'ఆగ్రో',
+  'Industries': 'ఇండస్ట్రీస్',
+  'Processing': 'ప్రాసెసింగ్',
+  'Unit': 'యూనిట్',
+  'Modern': 'మోడర్న్',
+  'Oil': 'ఆయిల్',
+  'New': 'న్యూ',
+  'Old': 'ఓల్డ్',
+  'Nagar': 'నగర్',
+  'Colony': 'కాలనీ',
+  'Street': 'స్ట్రీట్',
+  'Village': 'గ్రామం',
+  'Town': 'టౌన్',
+  'City': 'సిటీ',
+  'District': 'జిల్లా',
+  'Mandal': 'మండలం',
+  'State': 'రాష్ట్రం',
+  'Paddy': 'వరి',
+  'Fine': 'ఫైన్',
+  'Common': 'కామన్',
+  'Sona': 'సోనా',
+  'Masuri': 'మసూరి',
+  'BPT': 'బిపిటి',
+  'MTU': 'ఎమ్టియు',
+  'Chilli': 'మిరప',
+  'Black': 'నల్ల',
+  'Gram': 'మినుములు',
+  'Groundnut': 'వేరుశనగ',
+  'Cotton': 'పత్తి',
+  'Maize': 'మొక్కజొన్న',
+  'Royal': 'రాయల్',
+  'Kakatiya': 'కాకతీయ',
+  'Andhra': 'ఆంధ్ర',
+  'Pradesh': 'ప్రదేశ్',
+  'Telangana': 'తెలంగాణ',
+  'Kodad': 'కోదాడ',
+  'bags': 'బస్తాలు',
+  'qtl': 'క్వింటాళ్ళు',
   // Locations & Roads
   'Armoor': 'ఆర్మూర్',
   'Nandyal': 'నంద్యాల',
@@ -146,7 +189,7 @@ const nameTokenMap = {
   'Suryapet': 'సూర్యాపేట',
   'Tenali': 'తెనాలి',
   'Guntur': 'గుంటూరు',
-  // Initials
+  // Single-letter initials
   'M': 'ఎమ్',
   'V': 'వి',
   'P': 'పి',
@@ -158,16 +201,82 @@ const nameTokenMap = {
   'B': 'బి',
   'D': 'డి',
   'T': 'టి',
-  'A': 'ఎ'
+  'A': 'ఎ',
+  'N': 'ఎన్',
+  'L': 'ఎల్',
+  'H': 'హెచ్',
+  'J': 'జే',
+  'C': 'సి'
+}
+
+// Automatic phonetic English-to-Telugu transliteration engine
+// This converts ANY English text to Telugu script automatically
+const teluguPhoneticMap = {
+  // Vowels
+  'aa': 'ా', 'ee': 'ీ', 'ii': 'ీ', 'oo': 'ూ', 'uu': 'ూ',
+  'ai': 'ై', 'ei': 'ై', 'au': 'ౌ', 'ou': 'ౌ',
+  // Consonant clusters
+  'sh': 'శ', 'th': 'త', 'ch': 'చ', 'bh': 'భ', 'dh': 'ధ',
+  'gh': 'ఘ', 'jh': 'ఝ', 'kh': 'ఖ', 'ph': 'ఫ', 'ng': 'ంగ',
+  'nk': 'ంక', 'nd': 'ండ', 'nt': 'ంట', 'mp': 'ంప', 'mb': 'ంబ',
+  'tr': 'ట్ర', 'dr': 'డ్ర', 'pr': 'ప్ర', 'br': 'బ్ర', 'kr': 'క్ర',
+  'gr': 'గ్ర', 'fr': 'ఫ్ర', 'sr': 'స్ర', 'str': 'స్ట్ర',
+  // Basic consonants
+  'k': 'క', 'g': 'గ', 'c': 'క', 'j': 'జ', 't': 'ట',
+  'd': 'డ', 'n': 'న', 'p': 'ప', 'b': 'బ', 'm': 'మ',
+  'y': 'య', 'r': 'ర', 'l': 'ల', 'v': 'వ', 'w': 'వ',
+  's': 'స', 'h': 'హ', 'f': 'ఫ', 'z': 'జ', 'x': 'క్స',
+  'q': 'క',
+  // Vowels standalone
+  'a': 'అ', 'e': 'ఎ', 'i': 'ఇ', 'o': 'ఒ', 'u': 'ఉ'
+}
+
+function autoTransliterateToTelugu(word) {
+  if (!word || typeof word !== 'string') return word
+  // Skip if already contains Telugu or numbers or special chars
+  if (/[\u0C00-\u0C7F]/.test(word)) return word
+  if (/^\d+$/.test(word)) return word
+  if (/^[^a-zA-Z]+$/.test(word)) return word
+  
+  let result = ''
+  const lower = word.toLowerCase()
+  let i = 0
+  
+  while (i < lower.length) {
+    let matched = false
+    // Try matching 3-char, then 2-char, then 1-char sequences
+    for (let len = 3; len >= 1; len--) {
+      const chunk = lower.substring(i, i + len)
+      if (teluguPhoneticMap[chunk]) {
+        result += teluguPhoneticMap[chunk]
+        i += len
+        matched = true
+        break
+      }
+    }
+    if (!matched) {
+      result += lower[i]
+      i++
+    }
+  }
+  return result
 }
 
 function transliterateNameToTelugu(nameStr) {
   if (!nameStr || typeof nameStr !== 'string') return nameStr
-  const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,|\.)/)
+  // Don't transliterate pure numbers, dates, or currency
+  if (/^\d/.test(nameStr) || /^[₹$€]/.test(nameStr)) return nameStr
+  
+  const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,|\.|\&|:)/)
   return tokens.map((token) => {
+    // Check dictionary first (exact match)
     if (nameTokenMap[token]) return nameTokenMap[token]
     const trimmed = token.trim()
     if (nameTokenMap[trimmed]) return nameTokenMap[trimmed]
+    // For unknown words that are alphabetic, auto-transliterate phonetically
+    if (/^[a-zA-Z]{2,}$/.test(trimmed)) {
+      return autoTransliterateToTelugu(trimmed)
+    }
     return token
   }).join('')
 }

@@ -149,24 +149,25 @@ export default function DataTable({
   const sortableColumns = columns.filter((c) => c.sortable !== false && c.key)
 
   return (
-    <div className="space-y-4 font-sans">
+    <div className="space-y-3 md:space-y-4 font-sans">
       {/* Top Header / Title & Primary Action */}
       {(title || action) && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 md:gap-3 pb-1">
           <div>
-            {title && <h1 className="font-display font-800 text-[23px] text-slate-950 dark:text-slate-100 tracking-tight">{title}</h1>}
-            {subtitle && <p className="text-slate-600 dark:text-slate-400 font-medium text-[13.5px] mt-0.5">{subtitle}</p>}
+            {title && <h1 className="font-display font-800 text-[19px] md:text-[23px] text-slate-950 dark:text-slate-100 tracking-tight leading-tight">{title}</h1>}
+            {subtitle && <p className="text-slate-600 dark:text-slate-400 font-medium text-[12px] md:text-[13.5px] mt-0.5">{subtitle}</p>}
           </div>
           {action && <div className="shrink-0">{action}</div>}
         </div>
       )}
 
-      {/* Control Bar: Search + Filter Drawer Toggle + Export + View Switch */}
-      <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 flex-1 min-w-[260px]">
+      {/* Control Bar - Mobile Optimized */}
+      <div className="bg-white dark:bg-slate-900/90 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-800 p-2.5 md:p-3 shadow-sm space-y-2 md:space-y-0 md:flex md:flex-wrap md:items-center md:justify-between md:gap-3">
+        {/* Search + Filters Row */}
+        <div className="flex items-center gap-1.5 md:gap-2 flex-1 md:min-w-[260px]">
           {/* Global Search */}
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 font-bold" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 font-bold" />
             <input
               value={search}
               onChange={(e) => {
@@ -174,7 +175,7 @@ export default function DataTable({
                 setCurrentPage(1)
               }}
               placeholder={searchPlaceholder || t('search_placeholder')}
-              className={`${inputClass} pl-10 pr-8 bg-slate-50 dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium text-[14px] min-h-[42px] py-2`}
+              className={`${inputClass} pl-9 pr-8 bg-slate-50 dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium text-[13px] md:text-[14px] min-h-[38px] md:min-h-[42px] py-1.5 md:py-2`}
             />
             {search && (
               <button
@@ -191,12 +192,12 @@ export default function DataTable({
             variant={showFilters || activeFilterCount > 0 ? 'accent' : 'ghost'}
             size="md"
             onClick={() => setShowFilters(!showFilters)}
-            className="!min-h-[42px] !py-2 shrink-0 relative font-semibold"
+            className="!min-h-[38px] md:!min-h-[42px] !py-1.5 md:!py-2 shrink-0 relative font-semibold !text-[12px] md:!text-[13px]"
           >
-            <SlidersHorizontal size={15} />
-            <span>{t('filters')}</span>
+            <SlidersHorizontal size={14} />
+            <span className="hidden sm:inline">{t('filters')}</span>
             {activeFilterCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-white dark:bg-slate-100 text-indigo-700 font-bold text-[11px] flex items-center justify-center -mr-1 shadow-sm">
+              <span className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-white dark:bg-slate-100 text-indigo-700 font-bold text-[10px] md:text-[11px] flex items-center justify-center -mr-1 shadow-sm">
                 {activeFilterCount}
               </span>
             )}
@@ -206,7 +207,7 @@ export default function DataTable({
           {(search || activeFilterCount > 0) && (
             <button
               onClick={handleResetFilters}
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-slate-100 font-semibold text-[12.5px] flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+              className="text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-slate-100 font-semibold text-[12px] flex items-center gap-1 p-1.5 md:px-2.5 md:py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
               title="Reset all filters"
             >
               <RotateCcw size={13} />
@@ -215,39 +216,40 @@ export default function DataTable({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Export + View Toggle Row */}
+        <div className="flex items-center gap-1.5 md:gap-2 justify-end">
           {/* CSV Export */}
           <Button
             variant="ghost"
             size="md"
             onClick={exportToCSV}
-            className="!min-h-[42px] !py-2 text-[13px] font-semibold shrink-0"
+            className="!min-h-[38px] md:!min-h-[42px] !py-1.5 md:!py-2 text-[12px] md:text-[13px] font-semibold shrink-0"
             title="Export data to CSV"
           >
-            <Download size={15} />
+            <Download size={14} />
             <span className="hidden md:inline">{t('export')}</span>
           </Button>
 
           {/* View Mode Toggle */}
           {cardRender && (
-            <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center p-0.5 md:p-1 bg-slate-100 dark:bg-slate-800 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700">
               <button
                 onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-lg transition-colors ${
+                className={`p-1.5 rounded-md md:rounded-lg transition-colors ${
                   viewMode === 'table' ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-sky-400 shadow-sm font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-slate-100'
                 }`}
                 title="Table view"
               >
-                <List size={16} />
+                <List size={15} />
               </button>
               <button
                 onClick={() => setViewMode('cards')}
-                className={`p-1.5 rounded-lg transition-colors ${
+                className={`p-1.5 rounded-md md:rounded-lg transition-colors ${
                   viewMode === 'cards' ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-sky-400 shadow-sm font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-slate-100'
                 }`}
                 title="Card grid view"
               >
-                <LayoutGrid size={16} />
+                <LayoutGrid size={15} />
               </button>
             </div>
           )}
@@ -407,12 +409,12 @@ export default function DataTable({
           )}
         </div>
       ) : viewMode === 'table' ? (
-        /* High-Density Data Table with Dark / Light Mode Support */
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-[13.5px]">
+        /* High-Density Data Table - Mobile Optimized with Horizontal Scroll */
+        <div className="bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto -mx-0 scrollbar-thin">
+            <table className="w-full text-left border-collapse text-[12.5px] md:text-[13.5px] min-w-[600px]">
               <thead>
-                <tr className="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider font-extrabold text-[12px] select-none">
+                <tr className="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider font-extrabold text-[10.5px] md:text-[12px] select-none">
                   {columns.map((col) => {
                     const isSorted = sortKey === col.key
                     const isSortable = col.sortable !== false
@@ -420,7 +422,7 @@ export default function DataTable({
                       <th
                         key={col.key}
                         onClick={() => isSortable && handleSort(col.key)}
-                        className={`py-3.5 px-4 transition-colors ${
+                        className={`py-2.5 md:py-3.5 px-2.5 md:px-4 transition-colors whitespace-nowrap ${
                           isSortable ? 'cursor-pointer hover:text-blue-700 dark:hover:text-sky-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50' : ''
                         } ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''}`}
                       >
@@ -461,7 +463,7 @@ export default function DataTable({
                     {columns.map((col) => (
                       <td
                         key={col.key}
-                        className={`py-3.5 px-4 text-slate-950 dark:text-slate-100 font-semibold text-[13.5px] ${
+                        className={`py-2.5 md:py-3.5 px-2.5 md:px-4 text-slate-950 dark:text-slate-100 font-semibold text-[12px] md:text-[13.5px] ${
                           col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''
                         }`}
                       >
@@ -474,8 +476,8 @@ export default function DataTable({
             </table>
           </div>
 
-          {/* Pagination Footer */}
-          <div className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[13px] text-slate-700 dark:text-slate-300 font-medium">
+          {/* Pagination Footer - Mobile Friendly */}
+          <div className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 px-3 md:px-6 py-2.5 md:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-2 md:gap-3 text-[11.5px] md:text-[13px] text-slate-700 dark:text-slate-300 font-medium">
             <div className="flex items-center gap-2">
               <span>Rows per page:</span>
               <select
