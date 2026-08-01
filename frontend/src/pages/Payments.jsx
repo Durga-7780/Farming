@@ -4,11 +4,13 @@ import api from '../api/client'
 import DataTable from '../components/DataTable.jsx'
 import Modal from '../components/Modal.jsx'
 import { Button, Badge, inputClass, selectClass } from '../components/ui.jsx'
+import TransliterateInput from '../components/TransliterateInput.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 function PaymentForm({ initialData, paymentType, onSuccess, onCancel }) {
+  const { t } = useLanguage()
   const [form, setForm] = useState({
     farmer_name: initialData?.farmer_name || '',
     mill_name: initialData?.mill_name || '',
@@ -47,20 +49,20 @@ function PaymentForm({ initialData, paymentType, onSuccess, onCancel }) {
     <form onSubmit={handleSubmit} className="space-y-4 font-sans">
       <div>
         <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">
-          {paymentType === 'farmer' ? 'Farmer Name' : 'Rice Mill Name'}
+          {paymentType === 'farmer' ? t('farmer_col') + ' *' : t('mill_col') + ' *'}
         </label>
-        <input
+        <TransliterateInput
           required
           value={paymentType === 'farmer' ? form.farmer_name : form.mill_name}
           onChange={(e) => setForm({ ...form, [paymentType === 'farmer' ? 'farmer_name' : 'mill_name']: e.target.value })}
-          placeholder={paymentType === 'farmer' ? 'Enter farmer name...' : 'Enter mill name...'}
+          placeholder={paymentType === 'farmer' ? t('farmer_col') : t('mill_col')}
           className={inputClass}
         />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">Payment Amount (₹)</label>
+          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">{t('amount')} *</label>
           <input
             type="number"
             step="0.01"
@@ -73,7 +75,7 @@ function PaymentForm({ initialData, paymentType, onSuccess, onCancel }) {
         </div>
 
         <div>
-          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">Payment Mode</label>
+          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">{t('payment_mode')}</label>
           <select
             value={form.payment_mode}
             onChange={(e) => setForm({ ...form, payment_mode: e.target.value })}
@@ -88,7 +90,7 @@ function PaymentForm({ initialData, paymentType, onSuccess, onCancel }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">Settlement Type</label>
+          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">{t('settlement_type_col')}</label>
           <select
             value={form.payment_type}
             onChange={(e) => setForm({ ...form, payment_type: e.target.value })}
@@ -101,7 +103,7 @@ function PaymentForm({ initialData, paymentType, onSuccess, onCancel }) {
         </div>
 
         <div>
-          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">Payment Date</label>
+          <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">{t('date')} *</label>
           <input
             type="date"
             required
@@ -113,21 +115,21 @@ function PaymentForm({ initialData, paymentType, onSuccess, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">Reference / UTR / Cheque No.</label>
-        <input
+        <label className="block text-[13px] font-bold text-slate-900 dark:text-white mb-1">{t('reference_no')}</label>
+        <TransliterateInput
           value={form.reference_no}
           onChange={(e) => setForm({ ...form, reference_no: e.target.value })}
-          placeholder="e.g. UTR-9840324823"
+          placeholder={t('ref_ph')}
           className={inputClass}
         />
       </div>
 
       <div className="flex items-center justify-end gap-2 border-t border-slate-200 dark:border-slate-800 pt-4 mt-6">
         <Button type="button" variant="ghost" onClick={onCancel} className="font-bold">
-          Cancel
+          {t('cancel')}
         </Button>
         <Button type="submit" variant="primary" disabled={submitting} className="font-bold">
-          {submitting ? 'Saving...' : initialData ? 'Update Payment' : 'Record Payment'}
+          {submitting ? '...' : t('save_payment')}
         </Button>
       </div>
     </form>

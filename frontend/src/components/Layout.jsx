@@ -219,8 +219,17 @@ export default function Layout({ children }) {
                 ))}
               </nav>
 
-              <div className="px-5 py-4 border-t border-slate-800 space-y-3">
-                <button onClick={logout} className="flex items-center gap-2 text-rose-400 text-sm font-bold">
+              <div className="px-5 py-4 border-t border-slate-800 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-800 text-sm flex items-center justify-center shadow-md">
+                    {user?.name?.[0]?.toUpperCase() || 'A'}
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-white text-[14px] leading-tight">{user?.name || 'Admin'}</div>
+                    <div className="text-[12px] text-blue-400 font-bold capitalize">{user?.role || 'Administrator'}</div>
+                  </div>
+                </div>
+                <button onClick={logout} className="flex items-center gap-2 text-rose-400 hover:text-rose-300 text-sm font-bold transition-colors w-full">
                   <LogOut size={16} /> Log out
                 </button>
               </div>
@@ -238,7 +247,7 @@ export default function Layout({ children }) {
             <button onClick={() => setDrawerOpen(true)} className="md:hidden text-slate-700 dark:text-slate-300">
               <Menu size={22} />
             </button>
-            <div className="flex items-center gap-2.5">
+            <div className="hidden md:flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-sky-400 flex items-center justify-center shrink-0">
                 <Clock size={16} />
               </div>
@@ -349,7 +358,7 @@ export default function Layout({ children }) {
             </button>
 
             {/* Admin Profile Pill */}
-            <div className="flex items-center gap-2.5 pl-2.5 border-l border-slate-200 dark:border-slate-800">
+            <div className="hidden md:flex items-center gap-2.5 pl-2.5 border-l border-slate-200 dark:border-slate-800">
               <div className="relative">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-800 text-xs flex items-center justify-center shadow-md shadow-blue-500/20">
                   {user?.name?.[0]?.toUpperCase() || 'A'}
@@ -357,7 +366,7 @@ export default function Layout({ children }) {
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
               </div>
 
-              <div className="hidden lg:block text-left">
+              <div className="text-left">
                 <div className="font-extrabold text-slate-950 dark:text-white text-[13.5px] leading-tight">{user?.name || 'Admin'}</div>
                 <div className="text-[11px] text-blue-600 dark:text-sky-400 font-bold capitalize">{user?.role || 'Administrator'}</div>
               </div>
@@ -388,15 +397,19 @@ export default function Layout({ children }) {
         </main>
 
         {/* Mobile Bottom Nav */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-2 py-2 flex items-center justify-around shadow-lg">
+        <nav 
+          className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-2 py-2 flex items-center justify-start sm:justify-center overflow-x-auto shadow-lg gap-2"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+        >
+          <style>{`nav::-webkit-scrollbar { display: none; }`}</style>
           {MOBILE_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 px-2.5 py-1 rounded-lg text-[10.5px] ${
-                  isActive ? 'text-blue-600 dark:text-sky-400 font-bold' : 'text-slate-500 dark:text-slate-400'
+                `flex flex-col items-center gap-1 px-3 py-1 min-w-[72px] shrink-0 rounded-lg text-[10.5px] ${
+                  isActive ? 'text-blue-600 dark:text-sky-400 font-bold bg-blue-50 dark:bg-slate-800' : 'text-slate-500 dark:text-slate-400'
                 }`
               }
             >

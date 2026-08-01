@@ -142,13 +142,13 @@ export default function Sales() {
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-[13.5px]">
-              <div><span className="text-slate-500">Variety:</span> <strong className="text-slate-900 dark:text-white">{t(viewSale.produce_variety_name)}</strong></div>
-              <div><span className="text-slate-500">Quantity:</span> <strong className="font-mono text-slate-900 dark:text-white">{viewSale.quantity} bags</strong></div>
-              <div><span className="text-slate-500">Net Billing:</span> <strong className="font-mono text-emerald-600 dark:text-emerald-400">{fmt(viewSale.net_receivable)}</strong></div>
+              <div><span className="text-slate-500">{t('variety_col')}:</span> <strong className="text-slate-900 dark:text-white">{t(viewSale.produce_variety_name)}</strong></div>
+              <div><span className="text-slate-500">{t('quantity_bags_col')}:</span> <strong className="font-mono text-slate-900 dark:text-white">{viewSale.quantity}</strong></div>
+              <div><span className="text-slate-500">{t('net_col')}:</span> <strong className="font-mono text-emerald-600 dark:text-emerald-400">{fmt(viewSale.net_receivable)}</strong></div>
             </div>
 
             <div className="flex justify-end border-t border-slate-200 dark:border-slate-800 pt-3">
-              <Button variant="ghost" onClick={() => setViewSale(null)}>Close</Button>
+              <Button variant="ghost" onClick={() => setViewSale(null)}>{t('cancel')}</Button>
             </div>
           </div>
         </Modal>

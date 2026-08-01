@@ -139,3 +139,74 @@ def update_dispatch(
     db.commit()
     db.refresh(dispatch)
     return _dispatch_dict(dispatch)
+
+
+@router.put("/{dispatch_id}")
+def full_update_dispatch(
+    dispatch_id: int,
+    payload: schemas.MillDispatchCreate,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user)
+):
+    dispatch = db.query(models.MillDispatch).get(dispatch_id)
+    if not dispatch:
+        raise HTTPException(status_code=404, detail="Dispatch not found")
+
+    old_farmer = db.query(models.Farmer).get(dispatch.farmer_id)
+    new_farmer = db.query(models.Farmer).get(payload.farmer_id) if dispatch.farmer_id != payload.farmer_id else old_farmer
+
+    if not new_farmer:
+        raise HTTPException(status_code=404, detail="Farmer not found")
+        
+    mill = db.query(models.Mill).get(payload.mill_id)
+    if not mill:
+        raise HTTPException(status_code=404, detail="Mill not found")
+
+    # Validate vehicle details
+    if payload.vehicle_type == "lorry" and not payload.vehicle_number:
+        raise HTTPException(status_code=400, detail="Vehicle number required for lorry")
+    if payload.vehicle_type == "tractor":
+        if not payload.engine_number:
+            raise HTTPException(status_code=400, detail="Engine number required for tractor")
+        if not payload.trailer_number:
+            raise HTTPException(status_code=400, detail="Trailer number required for tractor")
+
+    # Revert old stock deduction
+    if old_farmer:
+        old_farmer.no_of_bags = (old_farmer.no_of_bags or 0) + dispatch.dispatch_bags
+        if dispatch.dispatch_weight > 0:
+            old_farmer.total_weight = (old_farmer.total_weight or 0) + dispatch.dispatch_weight
+
+    # Check if new farmer has enough stock after reverting old
+    if payload.dispatch_bags > (new_farmer.no_of_bags or 0):
+        # We need to rollback the reversion in DB session if this raises, but session rollback happens automatically on exception
+        raise HTTPException(
+            status_code=400,
+            detail=f"Dispatch bags ({payload.dispatch_bags}) exceeds available bags ({new_farmer.no_of_bags or 0})"
+        )
+
+    # Apply new stock deduction
+    new_farmer.no_of_bags = max(0, (new_farmer.no_of_bags or 0) - payload.dispatch_bags)
+    if payload.dispatch_weight > 0:
+        new_farmer.total_weight = max(0, (new_farmer.total_weight or 0) - payload.dispatch_weight)
+
+    # Update dispatch fields
+    dispatch.farmer_id = payload.farmer_id
+    dispatch.mill_id = payload.mill_id
+    dispatch.dispatch_bags = payload.dispatch_bags
+    dispatch.dispatch_weight = payload.dispatch_weight
+    dispatch.cost = payload.cost
+    dispatch.mc_reading = payload.mc_reading
+    dispatch.vehicle_weight = payload.vehicle_weight
+    dispatch.vehicle_type = payload.vehicle_type
+    dispatch.vehicle_number = payload.vehicle_number
+    dispatch.engine_number = payload.engine_number
+    dispatch.trailer_number = payload.trailer_number
+    dispatch.driver_name = payload.driver_name
+    dispatch.signature_role = payload.signature_role
+    if payload.dispatch_datetime:
+        dispatch.dispatch_datetime = payload.dispatch_datetime
+
+    db.commit()
+    db.refresh(dispatch)
+    return _dispatch_dict(dispatch)

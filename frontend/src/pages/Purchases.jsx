@@ -4,6 +4,7 @@ import api from '../api/client'
 import Modal from '../components/Modal.jsx'
 import DataTable from '../components/DataTable.jsx'
 import { Field, inputClass, Button, Badge } from '../components/ui.jsx'
+import TransliterateInput from '../components/TransliterateInput.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 const emptyForm = {
@@ -243,51 +244,51 @@ export default function Purchases() {
       />
 
       {/* New Purchase Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Record Farmer Purchase Order" wide>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={t('record_purchase')} wide>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-900 dark:text-slate-100">
-          <Field label="Farmer *">
+          <Field label={t('farmer_col') + ' *'}>
             <select required className={inputClass} value={form.farmer_id} onChange={(e) => setForm({ ...form, farmer_id: e.target.value })}>
-              <option value="">Select Farmer</option>
+              <option value="">{t('select_farmer')}</option>
               {farmers.map((f) => <option key={f.id} value={f.id}>{t(f.name)} ({f.code})</option>)}
             </select>
           </Field>
-          <Field label="Produce Variety *">
+          <Field label={t('produce_variety') + ' *'}>
             <select required className={inputClass} value={form.produce_variety_id} onChange={(e) => setForm({ ...form, produce_variety_id: e.target.value })}>
-              <option value="">Select Variety</option>
+              <option value="">{t('select_variety')}</option>
               {varieties.map((v) => <option key={v.id} value={v.id}>{t(v.name_en)}</option>)}
             </select>
           </Field>
 
-          <Field label="Quantity (Bags) *">
+          <Field label={t('quantity_bags_col') + ' *'}>
             <input type="number" required min="1" className={inputClass} value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
           </Field>
 
-          <Field label="Rate per Unit (₹) *">
+          <Field label={t('rate_per_qtl') + ' *'}>
             <input type="number" step="0.01" required min="0" className={inputClass} value={form.rate_per_unit} onChange={(e) => setForm({ ...form, rate_per_unit: e.target.value })} />
           </Field>
 
-          <Field label="Moisture Content (%)">
-            <input type="number" step="0.1" className={inputClass} value={form.mc_reading || ''} onChange={(e) => setForm({ ...form, mc_reading: e.target.value })} placeholder="e.g. 14.5" />
+          <Field label={t('moisture_mc')}>
+            <input type="number" step="0.1" className={inputClass} value={form.mc_reading || ''} onChange={(e) => setForm({ ...form, mc_reading: e.target.value })} placeholder={t('moisture_ph')} />
           </Field>
 
           <Field label="Quality Grade">
-            <input className={inputClass} value={form.quality_grade} onChange={(e) => setForm({ ...form, quality_grade: e.target.value })} placeholder="Grade A, Grade B..." />
+            <TransliterateInput className={inputClass} value={form.quality_grade} onChange={(e) => setForm({ ...form, quality_grade: e.target.value })} placeholder="Grade A, Grade B..." />
           </Field>
 
           <div className="sm:col-span-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
             <div className="flex justify-between text-sm font-semibold">
-              <span>Gross Total:</span>
+              <span>{t('gross_col')}:</span>
               <span className="font-mono">{fmt(preview.gross)}</span>
             </div>
             <div className="flex justify-between text-sm font-bold text-emerald-700 dark:text-emerald-400 border-t border-slate-200 dark:border-slate-800 pt-1">
-              <span>Net Payable:</span>
+              <span>{t('net_col')}:</span>
               <span className="font-mono text-base">{fmt(preview.net)}</span>
             </div>
           </div>
 
           <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
-            <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button variant="primary" type="submit">Submit Purchase Order</Button>
+            <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>{t('cancel')}</Button>
+            <Button variant="primary" type="submit">{t('save_purchase')}</Button>
           </div>
         </form>
       </Modal>

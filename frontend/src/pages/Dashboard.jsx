@@ -19,58 +19,7 @@ import { Button, Badge } from '../components/ui.jsx'
 const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 const CHART_COLORS = ['#2563eb', '#4f46e5', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6', '#0284c7']
 
-const defaultTrend = [
-  { date: 'Jul 18', purchases: 145000, sales: 180000 },
-  { date: 'Jul 19', purchases: 190000, sales: 210000 },
-  { date: 'Jul 20', purchases: 165000, sales: 195000 },
-  { date: 'Jul 21', purchases: 220000, sales: 260000 },
-  { date: 'Jul 22', purchases: 280000, sales: 310000 },
-  { date: 'Jul 23', purchases: 240000, sales: 290000 },
-  { date: 'Jul 24', purchases: 310000, sales: 350000 },
-  { date: 'Jul 25', purchases: 290000, sales: 340000 },
-  { date: 'Jul 26', purchases: 350000, sales: 410000 },
-  { date: 'Jul 27', purchases: 380000, sales: 430000 },
-  { date: 'Jul 28', purchases: 320000, sales: 390000 },
-  { date: 'Jul 29', purchases: 410000, sales: 480000 },
-  { date: 'Jul 30', purchases: 450000, sales: 520000 },
-  { date: 'Jul 31', purchases: 490000, sales: 560000 },
-]
 
-const defaultCropData = [
-  { name: 'Paddy - Sona Masuri', value: 4250 },
-  { name: 'Paddy - Common', value: 3100 },
-  { name: 'Paddy - BPT 5204', value: 2800 },
-  { name: 'Maize', value: 1950 },
-  { name: 'Cotton', value: 1400 },
-  { name: 'Chilli', value: 980 },
-  { name: 'Groundnut', value: 850 }
-]
-
-const defaultDistrictData = [
-  { district: 'Guntur', farmers: 45, weight: 4850 },
-  { district: 'Krishna', farmers: 38, weight: 3920 },
-  { district: 'West Godavari', farmers: 32, weight: 3410 },
-  { district: 'East Godavari', farmers: 28, weight: 2980 },
-  { district: 'Suryapet', farmers: 22, weight: 2350 },
-  { district: 'Nizamabad', farmers: 20, weight: 2100 },
-  { district: 'Kurnool', farmers: 15, weight: 1650 }
-]
-
-const defaultTopFarmers = [
-  { id: 1, code: 'FRM00001', name: 'M. Venkata Ramana', village: 'Tenali', total: 646083 },
-  { id: 2, code: 'FRM00002', name: 'Sundar Gupta', village: 'Bhattiprolu', total: 1136192 },
-  { id: 3, code: 'FRM00003', name: 'Jagadeeshwara Sharma', village: 'Kodad', total: 2419607 },
-  { id: 4, code: 'FRM00004', name: 'Anand Chari', village: 'Pedana', total: 501900 },
-  { id: 5, code: 'FRM00005', name: 'Pawan Babu', village: 'Kodad', total: 4498266 },
-]
-
-const defaultDispatches = [
-  { id: 1, dispatch_bill_no: 'DISP-2026-0001', farmer_name: 'M. Venkata Ramana', mill_name: 'Sri Lakshmi Venkateswara Rice Mill', dispatch_bags: 540, dispatch_weight: 420.5, cost: 646083, is_unloaded: true },
-  { id: 2, dispatch_bill_no: 'DISP-2026-0002', farmer_name: 'Sundar Gupta', mill_name: 'Sri Vijaya Durga Rice & Oil Mill', dispatch_bags: 309, dispatch_weight: 226.4, cost: 1136192, is_unloaded: true },
-  { id: 3, dispatch_bill_no: 'DISP-2026-0003', farmer_name: 'Jagadeeshwara Sharma', mill_name: 'Kakatiya Agro Industries', dispatch_bags: 506, dispatch_weight: 389.3, cost: 2419607, is_unloaded: false },
-  { id: 4, dispatch_bill_no: 'DISP-2026-0004', farmer_name: 'Anand Chari', mill_name: 'Sri Rama Agro Industries', dispatch_bags: 354, dispatch_weight: 262.9, cost: 501900, is_unloaded: true },
-  { id: 5, dispatch_bill_no: 'DISP-2026-0005', farmer_name: 'Pawan Babu', mill_name: 'Sri Krishna Modern Rice Mill', dispatch_bags: 356, dispatch_weight: 267.4, cost: 4498266, is_unloaded: false }
-]
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -112,11 +61,11 @@ export default function Dashboard() {
     loadDashboard()
   }, [])
 
-  const displayTrend = trend.length > 0 ? trend : defaultTrend
-  const displayCrop = cropData.length > 0 ? cropData : defaultCropData
-  const displayDistrict = districtData.length > 0 ? districtData : defaultDistrictData
-  const displayTopFarmers = topFarmers.length > 0 ? topFarmers : defaultTopFarmers
-  const displayDispatches = dispatches.length > 0 ? dispatches : defaultDispatches
+  const displayTrend = trend
+  const displayCrop = cropData
+  const displayDistrict = districtData
+  const displayTopFarmers = topFarmers
+  const displayDispatches = dispatches
 
   const tickColor = isDark ? '#f8fafc' : '#0f172a'
   const gridColor = isDark ? '#1e293b' : '#e2e8f0'
@@ -130,22 +79,13 @@ export default function Dashboard() {
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border border-blue-800/40">
         <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge tone="indigo" size="sm">
-              <ShieldCheck size={13} /> {t('enterprise_control_tower')}
-            </Badge>
-            <span className="text-[12px] text-blue-200 font-mono font-bold">{t('system_status')}</span>
-          </div>
           <h1 className="font-display font-800 text-[26px] text-white tracking-tight">
             {t('welcome_back')}, {user?.name}
           </h1>
-          <p className="text-blue-100 font-medium text-[14px] mt-1 max-w-xl">
-            {t('realtime_procurement')}
-          </p>
         </div>
 
         {/* Quick Shortcut Buttons */}
-        <div className="relative z-10 flex flex-wrap items-center gap-2">
+        <div className="relative z-10 hidden md:flex flex-wrap items-center gap-2">
           <Button variant="primary" size="md" onClick={() => navigate('/farmers')} className="font-bold">
             <Users size={16} /> {t('farmers_directory')}
           </Button>
@@ -162,7 +102,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label={t('todays_purchases')}
-          value={fmt(summary?.todays_purchases || 123543)}
+          value={fmt(summary?.todays_purchases || 0)}
           sublabel={t('daily_farmer_procurement')}
           icon={ShoppingCart}
           tone="primary"
@@ -171,7 +111,7 @@ export default function Dashboard() {
         />
         <StatCard
           label={t('todays_sales')}
-          value={fmt(summary?.todays_sales || 216666)}
+          value={fmt(summary?.todays_sales || 0)}
           sublabel={t('daily_mill_dispatches')}
           icon={TrendingUp}
           tone="accent"
@@ -180,7 +120,7 @@ export default function Dashboard() {
         />
         <StatCard
           label={t('live_grain_stock')}
-          value={`${(summary?.current_stock_qty || 9536).toLocaleString('en-IN')} qtl`}
+          value={`${(summary?.current_stock_qty || 0).toLocaleString('en-IN')} qtl`}
           sublabel={t('available_warehouse_stock')}
           icon={Warehouse}
           tone="success"
@@ -189,7 +129,7 @@ export default function Dashboard() {
         />
         <StatCard
           label={t('pending_farmer_payouts')}
-          value={fmt(summary?.pending_farmer_payments || 889515)}
+          value={fmt(summary?.pending_farmer_payments || 0)}
           sublabel={t('outstanding_balance_to_pay')}
           icon={Wallet}
           tone="warning"
@@ -198,7 +138,7 @@ export default function Dashboard() {
         />
         <StatCard
           label={t('pending_mill_receivables')}
-          value={fmt(summary?.pending_mill_payments || 1300000)}
+          value={fmt(summary?.pending_mill_payments || 0)}
           sublabel={t('collections_due_from_mills')}
           icon={Factory}
           tone="danger"
@@ -207,7 +147,7 @@ export default function Dashboard() {
         />
         <StatCard
           label={t('registered_farmers')}
-          value={summary?.total_farmers || 200}
+          value={summary?.total_farmers || 0}
           sublabel={t('active_farmer_network')}
           icon={Users}
           tone="info"
@@ -216,7 +156,7 @@ export default function Dashboard() {
         />
         <StatCard
           label={t('monthly_purchases')}
-          value={fmt(summary?.month_purchase_total || 2965053)}
+          value={fmt(summary?.month_purchase_total || 0)}
           sublabel={t('mtd_total_procurement')}
           icon={ShoppingCart}
           tone="primary"
@@ -225,7 +165,7 @@ export default function Dashboard() {
         />
         <StatCard
           label={t('monthly_mill_sales')}
-          value={fmt(summary?.month_sales_total || 5200000)}
+          value={fmt(summary?.month_sales_total || 0)}
           sublabel={t('mtd_total_mill_sales')}
           icon={TrendingUp}
           tone="accent"

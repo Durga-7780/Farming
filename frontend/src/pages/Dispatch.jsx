@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Plus, Truck, Check, Eye, UserCheck, ShieldCheck, MapPin, Wheat } from 'lucide-react'
+import { Plus, Truck, Check, Eye, UserCheck, ShieldCheck, MapPin, Wheat, Edit2 } from 'lucide-react'
 import api from '../api/client'
 import Modal from '../components/Modal.jsx'
 import DataTable from '../components/DataTable.jsx'
@@ -21,6 +21,7 @@ export default function Dispatch() {
   const [mills, setMills] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
   const [viewPass, setViewPass] = useState(null)
   const [unloadModal, setUnloadModal] = useState(null)
   const [form, setForm] = useState(emptyForm)
@@ -62,7 +63,7 @@ export default function Dispatch() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    await api.post('/api/dispatches', {
+    const payload = {
       ...form,
       farmer_id: Number(form.farmer_id),
       mill_id: Number(form.mill_id),
@@ -71,7 +72,13 @@ export default function Dispatch() {
       cost: parseFloat(form.cost) || 0,
       mc_reading: parseFloat(form.mc_reading) || 0,
       vehicle_weight: parseFloat(form.vehicle_weight) || 0,
-    })
+    }
+    
+    if (editing) {
+      await api.put(`/api/dispatches/${editing}`, payload)
+    } else {
+      await api.post('/api/dispatches', payload)
+    }
     setModalOpen(false)
     load()
   }
@@ -146,8 +153,8 @@ export default function Dispatch() {
       align: 'right',
       render: (_, row) => (
         <div className="flex items-center justify-end gap-1.5">
-          <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setViewPass(row) }}>
-            <Eye size={13} /> {t('view')}
+          <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setForm(row); setEditing(row.id); setModalOpen(true); }}>
+            <Edit2 size={13} /> {t('edit') || 'Edit'}
           </Button>
           {!row.is_unloaded && (
             <Button variant="accent" size="sm" onClick={(e) => { e.stopPropagation(); setUnloadModal(row) }}>
@@ -175,9 +182,11 @@ export default function Dispatch() {
       </div>
       <div className="flex items-center justify-between pt-1">
         <span className="font-mono text-emerald-700 dark:text-emerald-400 font-extrabold text-[15px]">{fmt(d.cost)}</span>
-        <Button variant="ghost" size="sm" onClick={() => setViewPass(d)}>
-          <Eye size={14} /> {t('view')}
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setForm(d); setEditing(d.id); setModalOpen(true); }}>
+            <Edit2 size={14} />
+          </Button>
+        </div>
       </div>
     </div>
   )
@@ -195,11 +204,122 @@ export default function Dispatch() {
         onRowClick={(d) => setViewPass(d)}
         cardRender={cardRender}
         action={
-          <Button variant="primary" onClick={() => { setForm(emptyForm); setModalOpen(true) }}>
+          <Button variant="primary" onClick={() => { setForm(emptyForm); setEditing(false); setModalOpen(true) }}>
             <Plus size={16} /> {t('new_dispatch_pass')}
           </Button>
         }
       />
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? t('edit_dispatch_pass') || 'Edit Dispatch Pass' : t('new_dispatch_pass')} wide>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-900 dark:text-slate-100">
+          <Field label={t('farmer_req') || 'Farmer *'}>
+            <select required className={inputClass} value={form.farmer_id} onChange={(e) => handleFarmerChange(e.target.value)}>
+              <option value="">{t('select_farmer') || 'Select Farmer'}</option>
+              {farmers.map(f => (
+                <option key={f.id} value={f.id}>{t(f.name)} - {f.village}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label={t('mill_req') || 'Mill *'}>
+            <select required className={inputClass} value={form.mill_id} onChange={(e) => setForm({ ...form, mill_id: e.target.value })}>
+              <option value="">{t('select_mill') || 'Select Mill'}</option>
+              {mills.map(m => (
+                <option key={m.id} value={m.id}>{t(m.name)} - {m.address}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label={t('dispatch_bags') || 'Dispatch Bags'}>
+            <input type="number" required className={inputClass} value={form.dispatch_bags} onChange={(e) => setForm({ ...form, dispatch_bags: e.target.value })} />
+          </Field>
+          <Field label={t('dispatch_weight') || 'Dispatch Weight (qtl)'}>
+            <input type="number" step="0.01" required className={inputClass} value={form.dispatch_weight} onChange={(e) => setForm({ ...form, dispatch_weight: e.target.value })} />
+          </Field>
+          <Field label={t('cost') || 'Cost (₹)'}>
+            <input type="number" step="0.01" required className={inputClass} value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} />
+          </Field>
+          <Field label={t('mc_reading') || 'MC Reading'}>
+            <input type="number" step="0.01" className={inputClass} value={form.mc_reading} onChange={(e) => setForm({ ...form, mc_reading: e.target.value })} />
+          </Field>
+          <Field label={t('vehicle_type') || 'Vehicle Type'}>
+            <select className={inputClass} value={form.vehicle_type} onChange={(e) => setForm({ ...form, vehicle_type: e.target.value })}>
+              <option value="lorry">Lorry</option>
+              <option value="tractor">Tractor</option>
+            </select>
+          </Field>
+          <Field label={t('vehicle_number') || 'Vehicle Number'}>
+            <input className={inputClass} value={form.vehicle_number} onChange={(e) => setForm({ ...form, vehicle_number: e.target.value })} />
+          </Field>
+          <Field label={t('driver_name') || 'Driver Name'}>
+            <input className={inputClass} value={form.driver_name} onChange={(e) => setForm({ ...form, driver_name: e.target.value })} />
+          </Field>
+          <Field label={t('signature_role') || 'Signature Role'}>
+            <input className={inputClass} value={form.signature_role} onChange={(e) => setForm({ ...form, signature_role: e.target.value })} />
+          </Field>
+          <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
+            <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>{t('cancel')}</Button>
+            <Button variant="primary" type="submit">{editing ? t('save_changes') || 'Save Changes' : t('new_dispatch_pass')}</Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal open={!!unloadModal} onClose={() => setUnloadModal(null)} title={t('unload_mill') || 'Unload at Mill'}>
+        <form onSubmit={handleUnloadSubmit} className="space-y-4 text-slate-900 dark:text-slate-100">
+          <Field label={t('mill_mc') || 'Mill MC'}>
+            <input type="number" step="0.01" className={inputClass} value={unloadForm.mill_mc} onChange={(e) => setUnloadForm({ ...unloadForm, mill_mc: e.target.value })} />
+          </Field>
+          <Field label={t('mill_weight') || 'Mill Weight (qtl)'}>
+            <input type="number" step="0.01" className={inputClass} value={unloadForm.mill_weight} onChange={(e) => setUnloadForm({ ...unloadForm, mill_weight: e.target.value })} />
+          </Field>
+          <Field label={t('mill_cost') || 'Mill Cost (₹)'}>
+            <input type="number" step="0.01" className={inputClass} value={unloadForm.mill_cost} onChange={(e) => setUnloadForm({ ...unloadForm, mill_cost: e.target.value })} />
+          </Field>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="ghost" type="button" onClick={() => setUnloadModal(null)}>{t('cancel')}</Button>
+            <Button variant="accent" type="submit">{t('unload') || 'Unload'}</Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal open={!!viewPass} onClose={() => setViewPass(null)} title={t('dispatch_details') || 'Dispatch Details'}>
+        {viewPass && (
+          <div className="space-y-4 text-[14px] text-slate-900 dark:text-slate-100">
+            <div className="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800 p-4 rounded-xl">
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('gate_pass_no')}</span>
+                <span className="font-bold">{viewPass.dispatch_bill_no}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('farmer')}</span>
+                <span className="font-bold">{t(viewPass.farmer_name)}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('mill')}</span>
+                <span className="font-bold">{t(viewPass.mill_name)}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('status')}</span>
+                <Badge tone={viewPass.is_unloaded ? 'success' : 'warning'}>{viewPass.is_unloaded ? t('unloaded') : t('in_transit')}</Badge>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('dispatch_bags')}</span>
+                <span className="font-bold">{viewPass.dispatch_bags}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('dispatch_weight')}</span>
+                <span className="font-bold">{viewPass.dispatch_weight} qtl</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('vehicle_number')}</span>
+                <span className="font-bold">{viewPass.vehicle_number || '-'}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[12px]">{t('driver_name')}</span>
+                <span className="font-bold">{viewPass.driver_name || '-'}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

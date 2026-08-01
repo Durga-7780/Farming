@@ -161,13 +161,42 @@ const nameTokenMap = {
   'A': 'ఎ'
 }
 
+const fetchingWords = new Set()
+const dynamicDictionary = {}
+let globalForceUpdate = null
+
+async function fetchWord(word) {
+  if (fetchingWords.has(word) || dynamicDictionary[word]) return
+  fetchingWords.add(word)
+  try {
+    const res = await fetch(`https://inputtools.google.com/request?text=${word}&itc=te-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`)
+    const data = await res.json()
+    if (data[0] === 'SUCCESS' && data[1][0][1][0]) {
+      dynamicDictionary[word] = data[1][0][1][0]
+      if (globalForceUpdate) globalForceUpdate()
+    } else {
+      dynamicDictionary[word] = word
+    }
+  } catch(e) {
+    dynamicDictionary[word] = word
+  }
+}
+
 function transliterateNameToTelugu(nameStr) {
   if (!nameStr || typeof nameStr !== 'string') return nameStr
   const tokens = nameStr.split(/(\s+|\(|\)|\/|-|,|\.)/)
   return tokens.map((token) => {
     if (nameTokenMap[token]) return nameTokenMap[token]
     const trimmed = token.trim()
-    if (nameTokenMap[trimmed]) return nameTokenMap[trimmed]
+    if (!trimmed) return token
+    if (nameTokenMap[trimmed]) return token.replace(trimmed, nameTokenMap[trimmed])
+    
+    if (/^[a-zA-Z]+$/.test(trimmed)) {
+      if (dynamicDictionary[trimmed]) {
+        return token.replace(trimmed, dynamicDictionary[trimmed])
+      }
+      fetchWord(trimmed)
+    }
     return token
   }).join('')
 }
@@ -187,10 +216,11 @@ export const translations = {
     reports: 'Reports',
     
     // Header & Banner
-    enterprise_control_tower: 'Enterprise Control Tower',
-    system_status: 'System Status: Optimal',
+    // enterprise_control_tower: 'Enterprise Control Tower',
+    // system_status: 'System Status: Optimal',
     welcome_back: 'Welcome back',
-    realtime_procurement: 'Real-time procurement analytics across 200 registered farmers, mill dispatches, and warehouse inventory.',
+    //realtime_procurement: 'Real-time procurement analytics across 200 registered farmers, mill dispatches, and warehouse inventory.',
+    realtime_procurement: 'Real-time procurement analytics',
     farmers_directory: 'Farmers Directory',
     new_dispatch: 'New Dispatch',
     
@@ -321,40 +351,40 @@ export const translations = {
     
     // Purchases Page
     procurement_purchases: 'Procurement & Purchases',
-    purchase_subtitle: '100 purchase vouchers recorded from farmers',
-    new_purchase_order: '+ New Purchase Order',
+    purchase_subtitle: 'Purchase vouchers recorded from farmers',
+    new_purchase_order: 'New Purchase Order',
     
     // Farmers Page
     farmer_directory: 'Farmer Directory & Ledgers',
-    farmer_subtitle: 'Managing 200 active farmers across AP & Telangana',
-    add_farmer: '+ Register New Farmer',
+    farmer_subtitle: 'Managing active farmers across West Godavari',
+    add_farmer: 'Register New Farmer',
     
     // Mills Page
     mill_directory: 'Rice Mill Partners Directory',
-    mill_subtitle: '8 processing and storage mills associated',
-    add_mill: '+ Add Rice Mill',
+    mill_subtitle: 'Processing and storage mills associated',
+    add_mill: 'Add Rice Mill',
 
     // Dispatch Page
     dispatch_title: 'Mill Dispatch Logistics & Gate Pass',
     dispatch_sub: 'Track vehicle gate passes from procurement to mill unloading',
-    new_dispatch_pass: '+ Create Gate Pass',
+    new_dispatch_pass: 'Create Gate Pass',
     
     // Sales Page
     sales_title: 'Mill Sales & Revenue Invoices',
     sales_sub: 'Billing invoices issued to partner rice mills',
-    new_sales_invoice: '+ New Sale Invoice',
+    new_sales_invoice: 'New Sale Invoice',
     
     // Stock Page
     stock_title: 'Live Inventory & Warehouse Stock',
     stock_sub: 'Real-time stock calculations across all produce varieties',
-    add_stock: '+ Adjust Stock',
+    add_stock: 'Adjust Stock',
     
     // Payments Page
     payments_title: 'Farmer Disbursal Payments',
     payments_sub: 'Tracking all financial transactions and payment receipts',
     farmer_payouts: 'Farmer Payouts',
     mill_collections: 'Mill Collections',
-    record_farmer_payment: '+ Record Farmer Payment',
+    record_farmer_payment: 'Record Farmer Payment',
     
     // Reports Page
     reports_title: 'Enterprise Reports & Statements',
@@ -376,7 +406,59 @@ export const translations = {
     of_str: 'of',
     entries: 'entries',
     rows_per_page: 'Rows per page:',
-    page_str: 'Page'
+    page_str: 'Page',
+
+    // Forms & Modals
+    cancel: 'Cancel',
+    save_record: 'Save Record',
+    save: 'Save',
+    edit_farmer: 'Edit Farmer Details',
+    farmer_name_req: 'Farmer Name *',
+    full_name_ph: 'Full name',
+    mobile_no: 'Mobile Number',
+    mobile_ph: '10-digit mobile',
+    village_mandal: 'Village / Mandal',
+    village_ph: 'Village or Mandal',
+    district_name: 'District',
+    district_ph: 'District name',
+    select_variety: 'Select Variety',
+    total_weight_qtl: 'Total Weight (Quintals)',
+    weight_ph: 'Weight in qtl',
+    save_farmer: 'Save Farmer Record',
+    edit_mill: 'Edit Rice Mill',
+    mill_name_req: 'Mill Name *',
+    mill_name_ph: 'e.g. Sri Venkateswara Rice Mill',
+    contact_person: 'Contact Person',
+    person_name_ph: 'Person name',
+    address: 'Address',
+    address_ph: 'Location address',
+    gstin: 'GSTIN / TIN',
+    storage_capacity: 'Storage Capacity (Qtl)',
+    capacity_ph: 'Max capacity',
+    save_mill: 'Save Rice Mill',
+    record_purchase: 'Record Farmer Purchase',
+    select_farmer: 'Select Farmer',
+    moisture_mc: 'Moisture (MC) %',
+    moisture_ph: 'e.g. 17.5',
+    rate_per_qtl: 'Rate per Quintal (₹)',
+    rate_ph: 'Price',
+    save_purchase: 'Save Purchase Order',
+    log_expense: 'Log Operational Expense',
+    edit_expense: 'Edit Expense Entry',
+    expense_title: 'Expense Title',
+    title_ph: 'e.g. Transport, Labor',
+    amount_rupees: 'Amount (₹)',
+    paid_to: 'Paid To',
+    person_vendor_ph: 'Person or Vendor',
+    save_expense: 'Save Expense',
+    record_payment: 'Record Payment / Receipt',
+    payment_type: 'Payment Type',
+    pay_to_farmer: 'Pay to Farmer',
+    collect_from_mill: 'Collect from Mill',
+    select_mill: 'Select Mill',
+    reference_no: 'Reference No.',
+    ref_ph: 'Cheque / UPI Ref',
+    save_payment: 'Save Payment'
   },
   te: {
     // Navigation
@@ -602,11 +684,66 @@ export const translations = {
     of_str: 'మొత్తం',
     entries: 'నమోదులు',
     rows_per_page: 'పేజీకి వరుసలు:',
-    page_str: 'పేజీ'
+    page_str: 'పేజీ',
+
+    // Forms & Modals
+    cancel: 'రద్దు చేయి',
+    save_record: 'రికార్డును సేవ్ చేయండి',
+    save: 'భద్రపరచు',
+    edit_farmer: 'రైతు వివరాలను సవరించండి',
+    farmer_name_req: 'రైతు పేరు *',
+    full_name_ph: 'పూర్తి పేరు',
+    mobile_no: 'మొబైల్ నంబరు',
+    mobile_ph: '10 అంకెల మొబైల్',
+    village_mandal: 'గ్రామం / మండలం',
+    village_ph: 'గ్రామం లేదా మండలం',
+    district_name: 'జిల్లా',
+    district_ph: 'జిల్లా పేరు',
+    select_variety: 'పంట రకాన్ని ఎంచుకోండి',
+    total_weight_qtl: 'మొత్తం బరువు (క్వింటాళ్ళు)',
+    weight_ph: 'బరువు (క్వింటాళ్ళు)',
+    save_farmer: 'రైతు వివరాలను భద్రపరచు',
+    edit_mill: 'రైస్ మిల్లు సవరించండి',
+    mill_name_req: 'మిల్లు పేరు *',
+    mill_name_ph: 'ఉదా: శ్రీ వేంకటేశ్వర రైస్ మిల్లు',
+    contact_person: 'సంప్రదించాల్సిన వ్యక్తి',
+    person_name_ph: 'వ్యక్తి పేరు',
+    address: 'చిరునామా',
+    address_ph: 'మిల్లు ప్రాంతం చిరునామా',
+    gstin: 'జిఎస్టి నంబరు',
+    storage_capacity: 'నిల్వ సామర్థ్యం (క్వింటాళ్ళు)',
+    capacity_ph: 'గరిష్ట సామర్థ్యం',
+    save_mill: 'మిల్లును భద్రపరచు',
+    record_purchase: 'రైతు కొనుగోలు ఆర్డర్ నమోదు చేయండి',
+    select_farmer: 'రైతును ఎంచుకోండి',
+    moisture_mc: 'తేమ శాతం (MC %)',
+    moisture_ph: 'ఉదా: 17.5',
+    rate_per_qtl: 'క్వింటాల్ ధర (₹)',
+    rate_ph: 'ధర',
+    save_purchase: 'కొనుగోలు ఆర్డర్‌ను భద్రపరచు',
+    log_expense: 'నిర్వహణ ఖర్చు నమోదు చేయండి',
+    edit_expense: 'ఖర్చు వివరాలను సవరించండి',
+    expense_title: 'ఖర్చు శీర్షిక',
+    title_ph: 'ఉదా: రవాణా, కూలీలు',
+    amount_rupees: 'మొత్తం (₹)',
+    paid_to: 'ఎవరికి చెల్లించారు',
+    person_vendor_ph: 'వ్యక్తి లేదా దుకాణం',
+    save_expense: 'ఖర్చును భద్రపరచు',
+    record_payment: 'చెల్లింపు లేదా రశీదు నమోదు',
+    payment_type: 'చెల్లింపు రకం',
+    pay_to_farmer: 'రైతుకు చెల్లింపు',
+    collect_from_mill: 'మిల్లు నుండి వసూలు',
+    select_mill: 'మిల్లును ఎంచుకోండి',
+    reference_no: 'రెఫరెన్స్ నంబరు',
+    ref_ph: 'చెక్కు / UPI రెఫరెన్స్',
+    save_payment: 'చెల్లింపును భద్రపరచు'
   }
 }
 
 export function LanguageProvider({ children }) {
+  const [, setTick] = useState(0)
+  globalForceUpdate = () => setTick(t => t + 1)
+
   const [lang, setLang] = useState(() => {
     return localStorage.getItem('agroledger_lang') || 'en'
   })

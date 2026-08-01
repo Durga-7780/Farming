@@ -5,6 +5,8 @@ import Modal from '../components/Modal.jsx'
 import DataTable from '../components/DataTable.jsx'
 import { Field, inputClass, Button, Badge } from '../components/ui.jsx'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import TransliterateInput from '../components/TransliterateInput.jsx'
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 const CATEGORIES = ['Transport', 'Labour', 'Fuel', 'Office', 'Miscellaneous']
 const COLORS = ['#2563eb', '#4f46e5', '#10b981', '#f59e0b', '#e11d48']
@@ -190,50 +192,50 @@ export default function Expenses() {
         cardRender={cardRender}
         action={
           <Button variant="primary" onClick={openCreate}>
-            <Plus size={16} /> Log New Expense
+            <Plus size={16} /> {t('log_expense')}
           </Button>
         }
       />
 
       {/* Create Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Log Operational Expense">
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={t('log_expense')}>
         <form onSubmit={handleSubmit} className="space-y-4 text-slate-900">
-          <Field label="Category *">
+          <Field label={t('expense_title') + ' *'}>
             <select className={inputClass} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </Field>
-          <Field label="Expense Amount (₹) *">
+          <Field label={t('amount_rupees') + ' *'}>
             <input required type="number" step="0.01" className={inputClass} value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} placeholder="0.00" />
           </Field>
-          <Field label="Description / Reason">
-            <input className={inputClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="e.g. Lorry diesel, labour charges" />
+          <Field label={t('paid_to')}>
+            <TransliterateInput className={inputClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder={t('title_ph')} />
           </Field>
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-            <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="primary">Save Expense Log</Button>
+            <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>{t('cancel')}</Button>
+            <Button type="submit" variant="primary">{t('save_expense')}</Button>
           </div>
         </form>
       </Modal>
 
       {/* Edit Modal */}
       {editForm && (
-        <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title="Edit Expense Entry">
+        <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title={t('edit_expense')}>
           <form onSubmit={handleEditSubmit} className="space-y-4 text-slate-900">
-            <Field label="Category">
+            <Field label={t('expense_title')}>
               <select className={inputClass} value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
-            <Field label="Amount (₹)">
+            <Field label={t('amount_rupees')}>
               <input required type="number" step="0.01" className={inputClass} value={editForm.amount} onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })} />
             </Field>
-            <Field label="Description">
-              <input className={inputClass} value={editForm.description || ''} onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} />
+            <Field label={t('paid_to')}>
+              <TransliterateInput className={inputClass} value={editForm.description || ''} onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} />
             </Field>
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-              <Button type="button" variant="ghost" onClick={() => setEditModalOpen(false)}>Cancel</Button>
-              <Button type="submit" variant="primary">Save Changes</Button>
+              <Button type="button" variant="ghost" onClick={() => setEditModalOpen(false)}>{t('cancel')}</Button>
+              <Button type="submit" variant="primary">{t('save_expense')}</Button>
             </div>
           </form>
         </Modal>

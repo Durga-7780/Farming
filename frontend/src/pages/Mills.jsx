@@ -3,7 +3,8 @@ import { Plus, Factory, MapPin, Phone, Building, Edit2, Trash2 } from 'lucide-re
 import api from '../api/client'
 import DataTable from '../components/DataTable.jsx'
 import Modal from '../components/Modal.jsx'
-import { Field, inputClass, Button, Badge } from '../components/ui.jsx'
+import { Field, Button, Badge, inputClass } from '../components/ui.jsx'
+import TransliterateInput from '../components/TransliterateInput.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 const emptyMill = {
@@ -185,23 +186,23 @@ export default function Mills() {
       />
 
       {/* Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Rice Mill' : t('add_mill')} wide>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? t('edit_mill') : t('add_mill')} wide>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-900 dark:text-slate-100">
-          <Field label="Rice Mill Name *">
-            <input required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Mill name" />
+          <Field label={t('mill_name_req')}>
+            <TransliterateInput required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t('mill_name_ph')} />
           </Field>
-          <Field label="Contact Person">
-            <input className={inputClass} value={form.contact_person} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} placeholder="Person name" />
+          <Field label={t('contact_person')}>
+            <TransliterateInput className={inputClass} value={form.contact_person} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} placeholder={t('person_name_ph')} />
           </Field>
-          <Field label="Mobile Number">
-            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} placeholder="10-digit mobile" />
+          <Field label={t('mobile_no')}>
+            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} placeholder={t('mobile_ph')} />
           </Field>
-          <Field label="Address / Location">
-            <input className={inputClass} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Full address" />
+          <Field label={t('address')}>
+            <TransliterateInput className={inputClass} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder={t('address_ph')} />
           </Field>
           <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
-            <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button variant="primary" type="submit">Save Mill Record</Button>
+            <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>{t('cancel')}</Button>
+            <Button variant="primary" type="submit">{t('save_mill')}</Button>
           </div>
         </form>
       </Modal>

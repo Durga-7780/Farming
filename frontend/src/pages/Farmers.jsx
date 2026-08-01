@@ -3,7 +3,8 @@ import { Plus, Download, Edit2, Phone, MapPin, Wheat, Eye, FileText, CheckCircle
 import api from '../api/client'
 import DataTable from '../components/DataTable.jsx'
 import Modal from '../components/Modal.jsx'
-import { Field, inputClass, Button, Badge } from '../components/ui.jsx'
+import { Field, Button, Badge, inputClass } from '../components/ui.jsx'
+import TransliterateInput from '../components/TransliterateInput.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 const emptyFarmer = {
@@ -381,38 +382,38 @@ export default function Farmers() {
       />
 
       {/* Register/Edit Farmer Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Farmer Details' : t('add_farmer')} wide>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? t('edit_farmer') : t('add_farmer')} wide>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-900 dark:text-slate-100">
-          <Field label="Farmer Name *">
-            <input required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Full name" />
+          <Field label={t('farmer_name_req')}>
+            <TransliterateInput required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t('full_name_ph')} />
           </Field>
 
-          <Field label="Mobile Number">
-            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} placeholder="10-digit mobile" />
+          <Field label={t('mobile_no')}>
+            <input className={inputClass} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} placeholder={t('mobile_ph')} />
           </Field>
 
-          <Field label="Village / Mandal">
-            <input className={inputClass} value={form.village} onChange={(e) => setForm({ ...form, village: e.target.value })} placeholder="Village or Mandal" />
+          <Field label={t('village_mandal')}>
+            <TransliterateInput className={inputClass} value={form.village} onChange={(e) => setForm({ ...form, village: e.target.value })} placeholder={t('village_ph')} />
           </Field>
 
-          <Field label="District">
-            <input className={inputClass} value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} placeholder="District name" />
+          <Field label={t('district_name')}>
+            <TransliterateInput className={inputClass} value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} placeholder={t('district_ph')} />
           </Field>
 
-          <Field label="Produce Variety">
+          <Field label={t('produce_variety')}>
             <select className={inputClass} value={form.produce_variety_id} onChange={(e) => setForm({ ...form, produce_variety_id: e.target.value })}>
-              <option value="">Select Variety</option>
+              <option value="">{t('select_variety')}</option>
               {varieties.map((v) => <option key={v.id} value={v.id}>{v.name_en}</option>)}
             </select>
           </Field>
 
-          <Field label="Total Weight (Quintals)">
-            <input type="number" step="0.01" className={inputClass} value={form.total_weight} onChange={(e) => setForm({ ...form, total_weight: e.target.value })} placeholder="Weight in qtl" />
+          <Field label={t('total_weight_qtl')}>
+            <input type="number" step="0.01" className={inputClass} value={form.total_weight} onChange={(e) => setForm({ ...form, total_weight: e.target.value })} placeholder={t('weight_ph')} />
           </Field>
 
           <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
-            <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button variant="primary" type="submit">Save Farmer Record</Button>
+            <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>{t('cancel')}</Button>
+            <Button variant="primary" type="submit">{t('save_farmer')}</Button>
           </div>
         </form>
       </Modal>

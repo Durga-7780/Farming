@@ -67,7 +67,7 @@ class Mill(Base):
     bank_ifsc = Column(String(20))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-
+    bank_name = Column(String(100))
     sales = relationship("Sale", back_populates="mill")
     payments = relationship("MillPayment", back_populates="mill")
 
